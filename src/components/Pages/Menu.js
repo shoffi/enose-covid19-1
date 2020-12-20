@@ -19,6 +19,9 @@ class Home extends Component {
     sync () {
         console.log('sync')
         ipcRenderer.send('dbSync')
+        ipcRenderer.on('dbSyncDone', (event) => {
+            alert(`sinkronisasi selesai`)
+        })
     }
 
     render() {

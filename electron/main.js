@@ -4,10 +4,14 @@ const path = require('path');
 const mysql = require('mysql');
 const request = require('request');
 const Store = require('./Store.js');
+const Log = require('./Log.js');
+const electron = require('electron');
 const modal = require('electron-modal');
 const PythonShell = require('python-shell');
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const { resolve } = require('path');
+
+const userDataPath = (electron.app || electron.remote.app).getPath('userData');
 
 let mainWindow;
 
@@ -21,6 +25,10 @@ const store = new Store({
     }
 });
 
+const samplingLogger = new Log({configName: 'sampling-log'})
+const clinicalLogger = new Log({configName: 'clinical-log'})
+const sensorLogger = new Log({configName: 'sensor-log'})
+
 // MySQl Connection
 let { host, user, password, database } = store.get('database');
 console.log(host)
@@ -32,23 +40,12 @@ let connection = mysql.createConnection({
     database:   database
 })
 
-let { cloud_host, cloud_user, cloud_password, cloud_database } = store.get('cloud-vps');
-
-// let cloud = mysql.createConnection({
-//     host    :   cloud_host,
-//     user    :   cloud_user,
-//     password:   cloud_password,
-//     database:   cloud_database
-// })
+let { cloud_host, cloud_database } = store.get('cloud-vps');
 
 function createWindow () {
     connection.connect(function (err) {
         console.log(err)
     })
-
-    // cloud.connect(function (err) {
-    //     console.log(err)
-    // })
 
     modal.setup();
 
@@ -284,7 +281,11 @@ ipcMain.on('storePatient', (event, input, detailPatient, clinical_data) => {
             async function synchronizedDB() {
                 console.log('Syncronizing Check')
 
+                sampling.id = result.insertId
+                console.log('sampling log = ' + JSON.stringify(sampling))
+
                 let resolveValue = {
+                    'sampling'    : sampling,
                     'sampling_id' : result.insertId,
                     'sync'        : false
                 }
@@ -309,6 +310,7 @@ ipcMain.on('storePatient', (event, input, detailPatient, clinical_data) => {
                                 (error, res, body) => {
                                     if (error) {
                                         console.error(error)
+                                        // logging gagal masukin ke cloud sampling
                                         return
                                     }
                                     console.log(`sampling statusCode: ${res.statusCode}`)
@@ -338,9 +340,9 @@ ipcMain.on('storePatient', (event, input, detailPatient, clinical_data) => {
     // "Consuming Code" (Must wait for a fulfilled Promise)
     insertSamplingPromise.then(
         function(value) {
-            connection.query('INSERT INTO clinical_data SET ?', clicinal_data_row, function(err) {
+            connection.query('INSERT INTO clinical_data SET ?', clicinal_data_row, function(err, clicinal_data_res) {
                 if (err) throw err;
-
+                
                 if(value.sync){
                     clicinal_data_row.database = cloud_database
 
@@ -358,6 +360,13 @@ ipcMain.on('storePatient', (event, input, detailPatient, clinical_data) => {
                           console.log(body)
                         }
                     )
+                }
+                else{
+                    // logging gagal masukin ke cloud sampling
+                    console.log('logging gagal masukin ke cloud sampling')
+                    samplingLogger.insert(value.sampling)
+                    clicinal_data_row.id = clicinal_data_res.insertId
+                    clinicalLogger.insert(clicinal_data_row)
                 }
 
                 mainWindow.send('storePatientResponse', value.sampling_id)
@@ -388,13 +397,13 @@ ipcMain.on('recording', (event, data, presentase, sampling_id, sync_status) => {
         console.log(`masuk 100!`)
 
         let saveOptions = {
-            defaultPath: app.getPath('documents') + '/sampling'+sampling_id+'.csv'
+            defaultPath: app.getPath('documents') + '/untitled.csv'
         }
 
         let savePromise = dialog.showSaveDialog(null, saveOptions)
 
         savePromise.then(
-            (value) =>{
+            (value) => {
                 console.log(value)
                 isShowSaveDialog = 0
                 if(!value.canceled) {
@@ -405,42 +414,15 @@ ipcMain.on('recording', (event, data, presentase, sampling_id, sync_status) => {
                         console.log(`file ${value.filePath} successfully created!`)
                         content = header
                     })
+                else{
+                    content = header
                 }
-            })
-        
-
-        // console.log(`masuk 100!`)
-
-        // let saveOptions = {
-        //     defaultPath: app.getPath('documents') + '/untitled.csv'
-        // }
-
-        // let savePromise = dialog.showSaveDialog(null, saveOptions)
-
-        // savePromise.then(
-        //     (value) =>{
-        //         console.log(value)
-        //         isShowSaveDialog = 0
-        //         if(!value.canceled) {
-        //             fs.writeFile(value.filePath, content, (err) => {
-        //                 if(err) {
-        //                     console.log('error in creating file: '+ err.message)
-        //                 }
-        //                 console.log(`file ${value.filePath} successfully created!`)
-        //                 content = header
-
-                        
-        //             })
-        //         }else{
-        //             content = header
-        //         }
-        //     },
-        //     (error) => {
-        //         console.log(error)
-        //     }
-        // )
-    }
-    else
+            },
+            (error) => {
+                console.log(error)
+            }
+        )
+    }else
     {   
         
         //isShowSaveDialog = 0
@@ -537,12 +519,16 @@ ipcMain.on('recording', (event, data, presentase, sampling_id, sync_status) => {
                     (error, res, body) => {
                     if (error) {
                         console.error(error)
+                        // loggingnya di sini
                         return
                     }
                     console.log(`sensor_data statusCode: ${res.statusCode}`)
                     console.log(body)
                     }
                 )
+            }else{
+                sensor_data.id = result.insertId
+                sensorLogger.insert(sensor_data)
             }
         });
 
@@ -605,4 +591,105 @@ ipcMain.on('getPengaturan', () => {
 ipcMain.on('updatePengaturan', (event, input) => {
     let { proses1, proses2, proses3 } = input;
     store.set('config', { proses1, proses2, proses3 });
+})
+
+const insertSampling = (sampling_json) => {
+    return new Promise( (resolve, reject) => {
+        try {
+            fs.readFile(sampling_json, 'utf8',(err, samplingJsonString) => {
+                let samplingJsonData = JSON.parse(samplingJsonString)
+                samplingJsonData.forEach(element => {
+                    request.post(
+                        `http://${cloud_host}/sync_sampling`,
+                        {
+                            json: element,
+                        },
+                        (error, res, body) => {
+                            if(error) throw error;
+                            samplingJsonData.shift()
+                            fs.writeFileSync(sampling_json, JSON.stringify(samplingJsonData));
+                            console.log(body)
+                            console.log('sinkronisasi sampling done')
+                        }
+                    ) 
+                });
+                resolve(samplingJsonString)
+            })
+    
+        } catch (error) {
+            reject(error)
+        }  
+    })
+}
+
+const insertClinical = (clinical_json) => {
+    return new Promise( (resolve, reject) => {
+        try {
+            fs.readFile(clinical_json, 'utf8',(err, clinicalJsonString) => {
+                let clinicalJsonData = JSON.parse(clinicalJsonString)
+                clinicalJsonData.forEach(element => {
+                    request.post(
+                        `http://${cloud_host}/sync_clinical_data`,
+                        {
+                            json: element,
+                        },
+                        (error, res, body) => {
+                            if(error) throw error;
+                            clinicalJsonData.shift()
+                            fs.writeFileSync(clinical_json, JSON.stringify(clinicalJsonData));
+                            console.log(body)
+                            console.log('sinkronisasi clinical done')
+                        }
+                    ) 
+                });
+                resolve(clinicalJsonString)
+            })
+    
+        } catch (error) {
+            reject(error)
+        }  
+    })
+}
+
+const insertSensor = (sensor_json) => {
+    return new Promise( (resolve, reject) => {
+        try {
+            fs.readFile(sensor_json, 'utf8',(err, sensorJsonString) => {
+                let sensorJsonData = JSON.parse(sensorJsonString)
+                sensorJsonData.forEach(element => {
+                    request.post(
+                        `http://${cloud_host}/sync_sensor_data`,
+                        {
+                            json: element,
+                        },
+                        (error, res, body) => {
+                            if(error) throw error;
+                            sensorJsonData.shift()
+                            fs.writeFileSync(sensor_json, JSON.stringify(sensorJsonData));
+                            console.log(body)
+                            console.log('sinkronisasi sensor done')
+                        }
+                    ) 
+                });
+                resolve(sensorJsonString)
+            })
+    
+        } catch (error) {
+            reject(error)
+        }  
+    })
+}
+
+ipcMain.on('dbSync', async (event) => {
+    console.log('synchronization process')
+
+    let sampling_json = path.join(userDataPath, 'sampling-log.json');
+    let clinical_json = path.join(userDataPath, 'clinical-log.json');
+    let sensor_json = path.join(userDataPath, 'sensor-log.json');
+
+    await insertSampling(sampling_json)
+    await insertClinical(clinical_json)
+    await insertSensor(sensor_json)
+    // sinkronisasi database selesai
+    mainWindow.send('dbSyncDone')
 })
