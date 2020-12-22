@@ -21,6 +21,7 @@ class Home extends Component {
         ipcRenderer.send('dbSync')
         ipcRenderer.on('dbSyncDone', (event) => {
             alert(`sinkronisasi selesai`)
+            ipcRenderer.removeAllListeners('dbSyncDone')
         })
     }
 
@@ -32,13 +33,16 @@ class Home extends Component {
         return (
             <div>
                 <TitleBar
-                    title={'Halaman Utama'}
-                    back={true}
-                    setBack={() => this.setState({redirect: '/connect'})}
-                    next={false}>
+                        title={'Halaman Utama'}
+                        back={true}
+                        setBack={() => this.setState({redirect: '/connect'})}
+                        next={true}
+                        setNext={() => this.sync()}
+                        setNextName={'Database Sync'}
+                    >
                 </TitleBar>
 
-                <div className="flex space-x-5 pt-8">
+                <div className="flex mt-5 space-x-5 pt-8">
                     <div className="w-1/3 p-2 bg-gray-200 rounded-lg">
                         <div className="mt-6 mb-8 mx-auto">
                             <img
@@ -71,12 +75,13 @@ class Home extends Component {
                     </div>
                 </div>
 
-                <div className="flex space-x-5 pt-8">
+                {/* <div className="flex space-x-5 pt-8">
                     <button 
                         className="bg-orange-500 w-full p-3 text-xl font-semibold text-white rounded-lg"
                         onClick={ () => this.sync() }
                     >Sinkronisasi Database</button>
-                </div>
+                </div> */}
+
             </div>
         );
     }

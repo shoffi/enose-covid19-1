@@ -24,9 +24,8 @@ class Home extends Component {
 
     handleSubmit(event) { 
         event.preventDefault();
-        let status = true;
-        
-        if (status) {
+        if (this.props.nurseId !== '' && this.props.ruangId !== '') {
+            console.log('nurse_id = ' + this.props.nurseId )
             this.setState({
                 redirect: '/menu',
                 isConnected: true
@@ -90,9 +89,11 @@ class Home extends Component {
                     <div className="flex-1 text-2xl space-y-3">
                         <CustomInput
                         data={this.props.nurseId}
+                        value={this.props.nurseId}
                         label={"ID Perawat"}
                         unit={""}
                         onchange={ this.props.setNurseId }
+                        required={true}
                         />
                         <div>
                             <p className="text-brand-green mb-1">Ruangan</p>

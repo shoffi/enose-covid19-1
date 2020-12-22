@@ -52,6 +52,10 @@ class PatientDetail extends Component {
         })
     }
 
+    componentDidMount(){
+        console.log('PatientDetail.js')
+    }
+
     focusKeyboard() {
         this.keyboard.current.onFocus();
     }
@@ -61,7 +65,7 @@ class PatientDetail extends Component {
             return  <Redirect 
                         to={{
                             pathname: this.state.redirect,
-                            state: this.state
+                            state: this.state.allInputs
                         }} 
                     />
         }
@@ -80,91 +84,11 @@ class PatientDetail extends Component {
                 <div className="py-8">
                     <div className="flex mx-auto pt-6 space-x-6">
 
-                        {/* <div className="w-1/4">
-                            <div className="mb-2">
-                                <p className="text-xl mb-1">ID Pasien</p>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        // onFocus={() => this.setState({inputName: 'PatientId'})}
-                                        onFocus={ this.toggleKeyboard }
-                                        onBlur={ this.toggleKeyboard }
-                                        value = { this.state.allInputs.PatientId }
-                                        onChange={ (event) => {
-                                            this.props.setPatientId(event.target.value)
-                                            this.setState({
-                                                allInputs: { ...this.state.allInputs, PatientId: event.target.value }
-                                            })
-                                        } }
-                                        className="w-full text-2xl font-semibold pl-3 pr-10 py-2 bg-gray-200 placeholder-gray-400 outline-none border-4 border-gray-200 focus:border-brand-orange rounded-lg"
-                                        placeholder="ID Pasien"
-                                    />
-                                    <CustomInput />
-                                    { this.state.isFocus && (
-                                        <div
-                                        ref = { this.keyboard }
-                                        className="absolute w-full z-10 mt-6">
-                                            <Keyboard
-                                                
-                                                layoutName={ this.state.layoutName }
-                                                layout={{
-                                                    numeric: [
-                                                        "1 2 3",
-                                                        "4 5 6",
-                                                        "7 8 9",
-                                                        " 0 .",
-                                                    ]
-                                                }}
-                                                onChange={this.onChangeKeyboard}
-                                                onKeyPress={this.onKeyPress}
-                                                inputName={this.state.inputName}
-                                                onChangeAll={ (inputs) => {
-                                                    this.setState({
-                                                        allInputs: inputs
-                                                    })
-                                                    for (const key in inputs) {
-                                                        if (inputs.hasOwnProperty(key)) {
-                                                            const value = inputs[key];
-                                                            this.props['set'+key] && this.props['set'+key](value)
-                                                        }
-                                                    }
-                                                } }
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                                <p className="text-gray-600 mt-1 text-xs leading-tight">
-                                    Masukkan ID atau NIK pasien.
-                                </p>
-                            </div>
-                            <div>
-                                <p className="text-xl mb-1">Waktu</p>
-                                <div className="relative">
-                                    <button
-                                    onClick = { this.toggleWaktu }
-                                    className="flex w-full items-center bg-gray-200 border-4 border-gray-200 focus:outline-none rounded-lg">
-                                        <p
-                                        className="text-xl text-left flex-1 font-semibold px-4 py-2">
-                                        Pagi
-                                        </p>
-                                        <svg class="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
-                                    </button>
-                                    { this.state.isTimesSelected && (<div className="absolute border bg-white w-full mt-2 rounded-md py-2 divide-y">
-                                        { this.state.times.map(waktu => (
-                                            <div
-                                            key = { waktu.id }
-                                            onClick = {this.toggleWaktu }
-                                            className="text-lg p-2 cursor-pointer">{ waktu.value }</div>
-                                        )) }
-                                    </div>)}
-                                </div>
-                            </div>
-                        </div> */}
-
                         <div className="grid grid-cols-3 gap-3">
                             <div>
                                 <CustomInput
-                                data={ this.state.allInputs.SuhuTubuh }
+                                data={ this.props.suhuTubuh }
+                                value={ this.props.suhuTubuh }
                                 label={"Suhu Tubuh"}
                                 unit={"°C"}
                                 onchange={ this.props.setSuhuTubuh }
@@ -189,7 +113,8 @@ class PatientDetail extends Component {
                             </div>
                             <div>
                                 <CustomInput
-                                data={ this.state.allInputs.AsamUrat }
+                                data={ this.props.asamUrat }
+                                value={ this.props.asamUrat }
                                 label={"Asam urat"}
                                 unit={"mg/dL"}
                                 onchange={ this.props.setAsamUrat }
@@ -216,7 +141,8 @@ class PatientDetail extends Component {
                             </div>
                             <div>
                                 <CustomInput
-                                data={ this.state.allInputs.AsamUrat }
+                                data={ this.props.kolestrol }
+                                value={ this.props.kolestrol }
                                 label={"Kolesterol"}
                                 unit={"mg/dL"}
                                 onchange={ this.props.setKolestrol }
@@ -243,7 +169,8 @@ class PatientDetail extends Component {
                             </div>
                             <div>
                                 <CustomInput
-                                data={ this.state.allInputs.SaturasiOksigen }
+                                data={ this.props.saturasiOksigen }
+                                value={ this.props.saturasiOksigen }
                                 label={"Saturasi Oksigen"}
                                 unit={"%"}
                                 onchange={ this.props.setSaturasiOksigen }
@@ -270,7 +197,8 @@ class PatientDetail extends Component {
                             </div>
                             <div>
                                 <CustomInput
-                                data={ this.state.allInputs.GulaDarah }
+                                data={ this.props.gulaDarah }
+                                value={ this.props.gulaDarah }
                                 label={"Gula Darah"}
                                 unit={"mg/dL"}
                                 onchange={ this.props.setGulaDarah }
@@ -297,7 +225,8 @@ class PatientDetail extends Component {
                             </div>
                             <div>
                                 <CustomInput
-                                data={ this.state.allInputs.GulaDarah }
+                                data={ this.props.denyutJantung }
+                                value={ this.props.denyutJantung }
                                 label={"Denyut Nadi"}
                                 unit={"BPM"}
                                 onchange={ this.props.setDenyutJantung }
@@ -322,17 +251,26 @@ class PatientDetail extends Component {
                                     <p className="mx-3 text-xl text-gray-600 flex items-center absolute inset-y-0 right-0">BPM</p>
                                 </div> */}
                             </div>
-                            <div>
+                            <div className="flex space-x-2">
                                 <CustomInput
-                                data={ this.state.allInputs.TekananDarah }
-                                label={"Tekanan Darah"}
-                                unit={"mmHg"}
-                                onchange={ this.props.setTekananDarah }
+                                    data={ this.props.tekananDarah }
+                                    value={ this.props.tekananDarah }
+                                    label={"Sistolik"}
+                                    unit={"mmHg"}
+                                    onchange={ this.props.setTekananDarah }
+                                />
+                                <CustomInput
+                                    data={ this.props.tekananDarah }
+                                    value={ this.props.tekananDarah }
+                                    label={"Diastolik"}
+                                    unit={"mmHg"}
+                                    onchange={ this.props.setTekananDarah }
                                 />
                             </div>
                             <div>
                                 <CustomInput
-                                data={ this.state.allInputs.respirationRate }
+                                data={ this.props.respirationRate }
+                                value={ this.props.respirationRate }
                                 label={"Respiration Rate"}
                                 unit={""}
                                 onchange={ this.props.setRespirationRate }
@@ -340,7 +278,8 @@ class PatientDetail extends Component {
                             </div>
                             <div>
                                 <CustomInput
-                                data={ this.state.allInputs.spo }
+                                data={ this.props.spo }
+                                value={ this.props.spo }
                                 label={'SPO2'}
                                 unit={"%"}
                                 onchange={ this.props.setSpo }

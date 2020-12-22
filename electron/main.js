@@ -121,7 +121,8 @@ function timestamp() {
 }
 
 // Terima data dari python setiap detik
-PythonShell.PythonShell.run('enose-dummy.py', {scriptPath: path.join(__dirname,"../python/")} ).stdout.on('data', (data) => {mainWindow.send('python-data', data)})
+let { pythonFile } = store.get('sensor')
+PythonShell.PythonShell.run(pythonFile, {scriptPath: path.join(__dirname,"../python/")} ).stdout.on('data', (data) => {mainWindow.send('python-data', data)})
 
 ipcMain.on('mounted', () => {
     let { rumahSakit } = store.get('ID');
@@ -226,12 +227,17 @@ function getMaxSensorDataIdCloud() {
 }
 
 ipcMain.on('storePatient', (event, input, detailPatient, clinical_data) => {
+    
+    console.log(detailPatient)
+
     let sampling = {        
         rs_id       :   1,
         nurse_id    :   detailPatient.nurse_id,
         room_id     :   detailPatient.ruang_id.id,
         patient_id  :   detailPatient.patient_id,
-        covid_status:   !detailPatient.covid_status,
+        covid_status:   detailPatient.covid_status,
+        pcr_tool    :   detailPatient.pcr_tool ? detailPatient.pcr_tool :null,
+        ct_pcr      :   detailPatient.ct_pcr ? detailPatient.ct_pcr : null,
 
         s1  :   input[0][0],
         s2  :   input[1][0],
@@ -258,14 +264,23 @@ ipcMain.on('storePatient', (event, input, detailPatient, clinical_data) => {
 
     let clicinal_data_row = {
         sampling_id: "",
-        temperature: clinical_data.temperature,
-        uric_acid: clinical_data.uric_acid,
-        cholestrol: clinical_data.cholestrol,
-        oxygen_saturation: clinical_data.oxygen_saturation,
-        glucose: clinical_data.glucose,
-        heart_rate: clinical_data.heart_rate,
+        temperature: clinical_data.temperature ? clinical_data.temperature :  null,
+        uric_acid: clinical_data.uric_acid ? clinical_data.uric_acid :  null,
+        cholestrol: clinical_data.cholestrol ? clinical_data.cholestrol : null,
+        oxygen_saturation: clinical_data.oxygen_saturation ? clinical_data.oxygen_saturation : null,
+        glucose: clinical_data.glucose ? clinical_data.glucose : null,
+        heart_rate: clinical_data.heart_rate ? clinical_data.heart_rate : null,
+
+        ddimer: clinical_data.ddimer ? clinical_data.ddimer : null,
+        hemoglobin: clinical_data.hemoglobin ? clinical_data.hemoglobin : null,
+        leukosit: clinical_data.leukosit ? clinical_data.leukosit : null,
+        trombosit: clinical_data.trombosit ? clinical_data.trombosit : null,
+        led: clinical_data.led ? clinical_data.led : null,
+        bloodGas: clinical_data.bloodGas ? clinical_data.bloodGas : null,
         created_at: timestamp(),
     }
+
+    console.log('clinical data row = '+ JSON.stringify(clicinal_data_row))
 
     let insertSamplingPromise = new Promise(function(myResolve, myReject) {
         // "Producing Code" (May take some time)
@@ -282,55 +297,57 @@ ipcMain.on('storePatient', (event, input, detailPatient, clinical_data) => {
                 console.log('Syncronizing Check')
 
                 sampling.id = result.insertId
-                console.log('sampling log = ' + JSON.stringify(sampling))
 
                 let resolveValue = {
                     'sampling'    : sampling,
                     'sampling_id' : result.insertId,
                     'sync'        : false
                 }
+
+                myResolve(resolveValue);
     
-                const maxSamplingIdLocal = await getMaxSamplingIdLocal() - 1
-                const maxSamplingIdCloud = await getMaxSamplingIdCloud()
-                const maxClinicalDataIdLocal = await getMaxClinicalDataIdLocal()
-                const maxClinicalDataIdCloud = await getMaxClinicalDataIdCloud()
-                const maxSensorDataIdLocal = await getMaxSensorDataIdLocal()
-                const maxSensorDataIdCloud = await getMaxSensorDataIdCloud()
+                // const maxSamplingIdLocal = await getMaxSamplingIdLocal() - 1
+                // const maxSamplingIdCloud = await getMaxSamplingIdCloud()
+                // const maxClinicalDataIdLocal = await getMaxClinicalDataIdLocal()
+                // const maxClinicalDataIdCloud = await getMaxClinicalDataIdCloud()
+                // const maxSensorDataIdLocal = await getMaxSensorDataIdLocal()
+                // const maxSensorDataIdCloud = await getMaxSensorDataIdCloud()
                 
-                if (maxSamplingIdLocal == maxSamplingIdCloud) {
-                    if (maxClinicalDataIdLocal == maxClinicalDataIdCloud) {
-                        if (maxSensorDataIdLocal == maxSensorDataIdCloud) {
-                            console.log("database sudah sinkron")
-                            sampling.database = cloud_database
-                            request.post(
-                                `http://${cloud_host}/store_sampling`,
-                                {
-                                    json: sampling,
-                                },
-                                (error, res, body) => {
-                                    if (error) {
-                                        console.error(error)
-                                        // logging gagal masukin ke cloud sampling
-                                        return
-                                    }
-                                    console.log(`sampling statusCode: ${res.statusCode}`)
-                                    console.log(body)
-                                    resolveValue.sync = true
-                                    myResolve(resolveValue);
-                                }
-                            )
-                        } else {
-                            console.log('tabel sensor_data belum sinkron')
-                            myResolve(resolveValue);
-                        }
-                    } else {
-                        console.log('tabel clinical_data belum sinkron')
-                        myResolve(resolveValue);
-                    }
-                } else {
-                    console.log('tabel sampling belum sinkron')
-                    myResolve(resolveValue);
-                }
+                // if (maxSamplingIdLocal == maxSamplingIdCloud) {
+                //     if (maxClinicalDataIdLocal == maxClinicalDataIdCloud) {
+                //         if (maxSensorDataIdLocal == maxSensorDataIdCloud) {
+                //             console.log("database sudah sinkron")
+                //             sampling.database = cloud_database
+                //             request.post(
+                //                 `http://${cloud_host}/store_sampling`,
+                //                 {
+                //                     json: sampling,
+                //                 },
+                //                 (error, res, body) => {
+                //                     if (error) {
+                //                         console.error(error)
+                //                         // logging gagal masukin ke cloud sampling
+                //                         return
+                //                     }
+                //                     console.log(`sampling statusCode: ${res.statusCode}`)
+                //                     console.log(body)
+                //                     resolveValue.sync = true
+                //                     myResolve(resolveValue);
+                //                 }
+                //             )
+                //         } else {
+                //             console.log('tabel sensor_data belum sinkron')
+                //             myResolve(resolveValue);
+                //         }
+                //     } else {
+                //         console.log('tabel clinical_data belum sinkron')
+                //         myResolve(resolveValue);
+                //     }
+                // } else {
+                //     console.log('tabel sampling belum sinkron')
+                //     myResolve(resolveValue);
+                // }
+
             }
     
             synchronizedDB()
@@ -394,34 +411,35 @@ ipcMain.on('recording', (event, data, presentase, sampling_id, sync_status) => {
     {
         isShowSaveDialog = 1
         clearInterval(startResponse)
-        console.log(`masuk 100!`)
+        // console.log(`masuk 100!`)
 
-        let saveOptions = {
-            defaultPath: app.getPath('documents') + '/untitled.csv'
-        }
+        // let saveOptions = {
+        //     defaultPath: app.getPath('documents') + 'sampling_'+sampling_id+'.csv'
+        // }
 
-        let savePromise = dialog.showSaveDialog(null, saveOptions)
+        // let savePromise = dialog.showSaveDialog(null, saveOptions)
 
-        savePromise.then(
-            (value) => {
-                console.log(value)
-                isShowSaveDialog = 0
-                if(!value.canceled) {
-                    fs.writeFile(value.filePath, content, (err) => {
-                        if(err) {
-                            console.log('error in creating file: '+ err.message)
-                        }
-                        console.log(`file ${value.filePath} successfully created!`)
-                        content = header
-                    })
-                else{
-                    content = header
-                }
-            },
-            (error) => {
-                console.log(error)
-            }
-        )
+        // savePromise.then(
+        //     (value) => {
+        //         console.log(value)
+        //         isShowSaveDialog = 0
+        //         if(!value.canceled) {
+        //             fs.writeFile(value.filePath, content, (err) => {
+        //                 if(err) {
+        //                     console.log('error in creating file: '+ err.message)
+        //                 }
+        //                 console.log(`file ${value.filePath} successfully created!`)
+        //                 content = header
+        //             })
+        //         }
+        //         else{
+        //             content = header
+        //         }
+        //     },
+        //     (error) => {
+        //         console.log(error)
+        //     }
+        // )
     }else
     {   
         
@@ -439,66 +457,66 @@ ipcMain.on('recording', (event, data, presentase, sampling_id, sync_status) => {
             MQ7_ADC             :   data[5],
             MQ8_ADC             :   data[6],
             MQ9_ADC             :   data[7],
-            MQ135_ADC           :   data[8],
+            MQ135_ADC           :   data[8] != '' ? data[8] : null,
             TEMPERATURE         :   data[9],
             HUMIDITY            :   data[10],
 
-            MQ2_PPM_LPG         :   data[11],
-            MQ2_PPM_CO          :   data[12],
-            MQ2_PPM_SMOKE       :   data[13],
-            MQ2_PPM_ALCOHOL     :   data[14],
-            MQ2_PPM_CH4         :   data[15],
-            MQ2_PPM_H2          :   data[16],
-            MQ2_PPM_PROPANE     :   data[17],
+            MQ2_PPM_LPG         :   data[11] != '' ? data[11] : null,
+            MQ2_PPM_CO          :   data[12] != '' ? data[12] : null,
+            MQ2_PPM_SMOKE       :   data[13] != '' ? data[13] : null,
+            MQ2_PPM_ALCOHOL     :   data[14] != '' ? data[14] : null,
+            MQ2_PPM_CH4         :   data[15] != '' ? data[15] : null,
+            MQ2_PPM_H2          :   data[16] != '' ? data[16] : null,
+            MQ2_PPM_PROPANE     :   data[17] != '' ? data[17] : null,
 
-            MQ3_PPM_ALCOHOL     :   data[18],
-            MQ3_PPM_BENZINE     :   data[19],
-            MQ3_PPM_CH4         :   data[20],
-            MQ3_PPM_CO          :   data[21],
-            MQ3_PPM_HEXANE      :   data[22],
-            MQ3_PPM_LPG         :   data[23],
+            MQ3_PPM_ALCOHOL     :   data[18] != '' ? data[18] : null,
+            MQ3_PPM_BENZINE     :   data[19] != '' ? data[19] : null,
+            MQ3_PPM_CH4         :   data[20] != '' ? data[20] : null,
+            MQ3_PPM_CO          :   data[21] != '' ? data[21] : null,
+            MQ3_PPM_HEXANE      :   data[22] != '' ? data[22] : null,
+            MQ3_PPM_LPG         :   data[23] != '' ? data[23] : null,
 
-            MQ4_PPM_ALCOHOL     :   data[24],
-            MQ4_PPM_CH4         :   data[25],
-            MQ4_PPM_CO          :   data[26],
-            MQ4_PPM_H2          :   data[27],
-            MQ4_PPM_LPG         :   data[28],
-            MQ4_PPM_SMOKE       :   data[29],
+            MQ4_PPM_ALCOHOL     :   data[24] != '' ? data[24] : null,
+            MQ4_PPM_CH4         :   data[25] != '' ? data[25] : null,
+            MQ4_PPM_CO          :   data[26] != '' ? data[26] : null,
+            MQ4_PPM_H2          :   data[27] != '' ? data[27] : null,
+            MQ4_PPM_LPG         :   data[28] != '' ? data[28] : null,
+            MQ4_PPM_SMOKE       :   data[29] != '' ? data[29] : null,
 
-            MQ5_PPM_ALCOHOL     :   data[30],
-            MQ5_PPM_CH4         :   data[31],
-            MQ5_PPM_CO          :   data[32],
-            MQ5_PPM_H2          :   data[33],
-            MQ5_PPM_LPG         :   data[34],
+            MQ5_PPM_ALCOHOL     :   data[30] != '' ? data[30] : null,
+            MQ5_PPM_CH4         :   data[31] != '' ? data[31] : null,
+            MQ5_PPM_CO          :   data[32] != '' ? data[32] : null,
+            MQ5_PPM_H2          :   data[33] != '' ? data[33] : null,
+            MQ5_PPM_LPG         :   data[34] != '' ? data[34] : null,
 
-            MQ6_PPM_ALCOHOL     :   data[35],
-            MQ6_PPM_CH4         :   data[36],
-            MQ6_PPM_CO          :   data[37],
-            MQ6_PPM_H2          :   data[38],
-            MQ6_PPM_LPG         :   data[39],
+            MQ6_PPM_ALCOHOL     :   data[35] != '' ? data[35] : null,
+            MQ6_PPM_CH4         :   data[36] != '' ? data[36] : null,
+            MQ6_PPM_CO          :   data[37] != '' ? data[37] : null,
+            MQ6_PPM_H2          :   data[38] != '' ? data[38] : null,
+            MQ6_PPM_LPG         :   data[39] != '' ? data[39] : null,
 
-            MQ7_PPM_ALCOHOL     :   data[40],
-            MQ7_PPM_CH4         :   data[41],
-            MQ7_PPM_CO          :   data[42],
-            MQ7_PPM_H2          :   data[43],
-            MQ7_PPM_LPG         :   data[44],
+            MQ7_PPM_ALCOHOL     :   data[40] != '' ? data[40] : null,
+            MQ7_PPM_CH4         :   data[41] != '' ? data[41] : null,
+            MQ7_PPM_CO          :   data[42] != '' ? data[42] : null,
+            MQ7_PPM_H2          :   data[43] != '' ? data[43] : null,
+            MQ7_PPM_LPG         :   data[44] != '' ? data[44] : null,
 
-            MQ8_PPM_ALCOHOL     :   data[45],
-            MQ8_PPM_CH4         :   data[46],
-            MQ8_PPM_CO          :   data[47],
-            MQ8_PPM_H2          :   data[48],
-            MQ8_PPM_LPG         :   data[49],
+            MQ8_PPM_ALCOHOL     :   data[45] != '' ? data[45] : null,
+            MQ8_PPM_CH4         :   data[46] != '' ? data[46] : null,
+            MQ8_PPM_CO          :   data[47] != '' ? data[47] : null,
+            MQ8_PPM_H2          :   data[48] != '' ? data[48] : null,
+            MQ8_PPM_LPG         :   data[49] != '' ? data[49] : null,
 
-            MQ9_PPM_CH4         :   data[50],
-            MQ9_PPM_CO          :   data[51],
-            MQ9_PPM_LPG         :   data[52],
+            MQ9_PPM_CH4         :   data[50] != '' ? data[50] : null,
+            MQ9_PPM_CO          :   data[51] != '' ? data[51] : null,
+            MQ9_PPM_LPG         :   data[52] != '' ? data[52] : null,
 
-            MQ135_PPM_ACETON    :   data[53],
-            MQ135_PPM_ALCOHOL   :   data[54],
-            MQ135_PPM_CO        :   data[55],
-            MQ135_PPM_CO2       :   data[56],
-            MQ135_PPM_NH4       :   data[57],
-            MQ135_PPM_TOLUOL    :   data[58],
+            MQ135_PPM_ACETON    :   data[53] != '' ? data[53] : null,
+            MQ135_PPM_ALCOHOL   :   data[54] != '' ? data[54] : null,
+            MQ135_PPM_CO        :   data[55] != '' ? data[55] : null,
+            MQ135_PPM_CO2       :   data[56] != '' ? data[56] : null,
+            MQ135_PPM_NH4       :   data[57] != '' ? data[57] : null,
+            MQ135_PPM_TOLUOL    :   data[58] != '' ? data[58] : null,
 
             created_at: timestamp()
         }
@@ -543,14 +561,17 @@ let startResponse
 
 ipcMain.on('start', (event, pengambilan_id, totalTime) => {
     console.log('starting.... ' + pengambilan_id)
-
-        // connection.query('INSERT INTO sensor_data SET ?', sensor_data, function(err, result, fields) {
-        //     if (err) throw err;
-        // });
 });
 
 ipcMain.on('stop', () => {
     // console.log("HAPUSSS")
+    let options = {
+        scriptPath: path.join(__dirname,"../python/")
+    }
+    PythonShell.PythonShell.run('pompa-on.py', options, function (err, results) {
+        if (err) throw err
+        console.log(results)
+    })
     startResponse = clearInterval(startResponse)
 })
 
@@ -597,23 +618,30 @@ const insertSampling = (sampling_json) => {
     return new Promise( (resolve, reject) => {
         try {
             fs.readFile(sampling_json, 'utf8',(err, samplingJsonString) => {
-                let samplingJsonData = JSON.parse(samplingJsonString)
-                samplingJsonData.forEach(element => {
-                    request.post(
-                        `http://${cloud_host}/sync_sampling`,
-                        {
-                            json: element,
-                        },
-                        (error, res, body) => {
-                            if(error) throw error;
-                            samplingJsonData.shift()
-                            fs.writeFileSync(sampling_json, JSON.stringify(samplingJsonData));
-                            console.log(body)
-                            console.log('sinkronisasi sampling done')
-                        }
-                    ) 
-                });
-                resolve(samplingJsonString)
+                if(err){
+
+                }else{
+                    let samplingJsonData = JSON.parse(samplingJsonString)
+                    samplingJsonData.forEach(element => {
+                        element.database = cloud_database
+                        request.post(
+                            `http://${cloud_host}/sync_sampling`,
+                            {
+                                json: element,
+                            },
+                            (error, res, body) => {
+                                if(error) {
+                                    throw error;
+                                }else{
+                                    samplingJsonData.shift()
+                                    fs.writeFileSync(sampling_json, JSON.stringify(samplingJsonData));
+                                    console.log(body)
+                                }
+                            }
+                        ) 
+                    });
+                    resolve(samplingJsonString)
+                }
             })
     
         } catch (error) {
@@ -626,23 +654,30 @@ const insertClinical = (clinical_json) => {
     return new Promise( (resolve, reject) => {
         try {
             fs.readFile(clinical_json, 'utf8',(err, clinicalJsonString) => {
-                let clinicalJsonData = JSON.parse(clinicalJsonString)
-                clinicalJsonData.forEach(element => {
-                    request.post(
-                        `http://${cloud_host}/sync_clinical_data`,
-                        {
-                            json: element,
-                        },
-                        (error, res, body) => {
-                            if(error) throw error;
-                            clinicalJsonData.shift()
-                            fs.writeFileSync(clinical_json, JSON.stringify(clinicalJsonData));
-                            console.log(body)
-                            console.log('sinkronisasi clinical done')
-                        }
-                    ) 
-                });
-                resolve(clinicalJsonString)
+                if(err){
+
+                }else{
+                    let clinicalJsonData = JSON.parse(clinicalJsonString)
+                    clinicalJsonData.forEach(element => {
+                        element.database = cloud_database
+                        request.post(
+                            `http://${cloud_host}/sync_clinical_data`,
+                            {
+                                json: element,
+                            },
+                            (error, res, body) => {
+                                if(error) {
+                                    throw error;
+                                } else {
+                                    clinicalJsonData.shift()
+                                    fs.writeFileSync(clinical_json, JSON.stringify(clinicalJsonData));
+                                    console.log(body)
+                                }
+                            }
+                        ) 
+                    });
+                    resolve(clinicalJsonString)
+                }
             })
     
         } catch (error) {
@@ -651,31 +686,49 @@ const insertClinical = (clinical_json) => {
     })
 }
 
+const sleep = (duration) => {
+    return new Promise (
+        (resolve, reject) => {
+            setTimeout(resolve, duration)
+        }
+    )
+}
+
 const insertSensor = (sensor_json) => {
     return new Promise( (resolve, reject) => {
         try {
             fs.readFile(sensor_json, 'utf8',(err, sensorJsonString) => {
-                let sensorJsonData = JSON.parse(sensorJsonString)
-                sensorJsonData.forEach(element => {
-                    request.post(
-                        `http://${cloud_host}/sync_sensor_data`,
-                        {
-                            json: element,
-                        },
-                        (error, res, body) => {
-                            if(error) throw error;
-                            sensorJsonData.shift()
-                            fs.writeFileSync(sensor_json, JSON.stringify(sensorJsonData));
-                            console.log(body)
-                            console.log('sinkronisasi sensor done')
-                        }
-                    ) 
-                });
-                resolve(sensorJsonString)
+                if(err){
+
+                }else{
+                    let sensorJsonData = JSON.parse(sensorJsonString)
+                    
+                        sensorJsonData.forEach(async(element) => {
+                            element.database = cloud_database
+                            await sleep(1000)
+                            request.post(
+                                `http://${cloud_host}/sync_sensor_data`,
+                                {
+                                    json: element,
+                                },
+                                (error, res, body) => {
+                                    if(error) {
+                                        throw error;
+                                    }else{
+                                        //sensorJsonData.shift()
+                                        //fs.writeFileSync(sensor_json, JSON.stringify(sensorJsonData));
+                                        console.log(body)
+                                    }
+                                }
+                            ) 
+                        });
+                    
+                    resolve(sensorJsonString)
+                }
             })
     
         } catch (error) {
-            reject(error)
+            reject()
         }  
     })
 }
@@ -688,8 +741,12 @@ ipcMain.on('dbSync', async (event) => {
     let sensor_json = path.join(userDataPath, 'sensor-log.json');
 
     await insertSampling(sampling_json)
+    console.log('sampling done')
     await insertClinical(clinical_json)
+    console.log('clinical done')
     await insertSensor(sensor_json)
+    console.log('sensor done')
+    
     // sinkronisasi database selesai
     mainWindow.send('dbSyncDone')
 })

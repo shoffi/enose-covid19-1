@@ -20,11 +20,17 @@ class AmbilSample extends Component {
             saturasiOksigen: this.props.saturasiOksigen,
             gulaDarah: this.props.gulaDarah,
             denyutJantung: this.props.denyutJantung,
+
+            pcr_tool: '',
+            ct_pcr: this.props.ctPcr,
+            isModalOpen: false,
+
             hasilSwab: [
                 { id: 1, value: 'Negatif Covid-19'},
                 { id: 2, value: 'Positif Covid-19'},
                 { id: 3, value: 'Tidak diketahui'},
             ],
+
             isHasilSelected: false,
 
             alatPCR: [
@@ -34,6 +40,7 @@ class AmbilSample extends Component {
                 { id: 4, value: 'D'},
                 { id: 5, value: 'E'},
             ],
+
             isPCRSelected: false,
 
             diseases: [
@@ -71,8 +78,7 @@ class AmbilSample extends Component {
     }
 
     componentDidMount(){
-        console.log("componentDidMount")
-        console.log(this.props)
+        console.log("AmbilSample.js")
     }
 
     handleSubmit (event) {
@@ -132,7 +138,7 @@ class AmbilSample extends Component {
 
     render () {
         if (this.state.redirect) {
-            console.log(this.state) 
+            // console.log(this.state)
             return <Redirect 
                         to={{
                             pathname: this.state.redirect,
@@ -142,82 +148,19 @@ class AmbilSample extends Component {
         }
         
         return (
-            <div className="w-full">
-                <TitleBar
-                    title={'Gejala Pasien'}
-                    back={true}
-                    next={true}
-                    setBack={() => this.setState({redirect: '/symptom-patient'})}
-                    setNext={() => this.startSampling()}
-                    setNextName={'Start Sampling'}
-                ></TitleBar>
+            <div className="relative w-full">
+                {!this.state.isModalOpen && (
+                    <TitleBar
+                        title={'Gejala Pasien'}
+                        back={true}
+                        next={true}
+                        setBack={() => this.setState({redirect: '/symptom-patient'})}
+                        setNext={() => this.setState({isModalOpen:true})}
+                        setNextName={'Proses Sampling'}
+                    ></TitleBar>
+                )}
 
                 <div className="py-8">
-                    {/* <div className="flex justify-center mb-5">
-                        <div className="w-2/3">
-                            <p className="text-center text-xl font-light leading-snug text-gray-800">
-                                Pilih sesuai dengan gejala yang dirasakan pasien saat ini. Jika pasien Negatif, silahkan pilih opsi <span className="font-semibold text-green-700">Negatif Covid-19</span>.
-                            </p>
-                        </div>
-                    </div> */}
-
-                    {/* <hr className="border my-3" />
-                    <div className="">
-                        <h3 className="text-2xl text-center font-bold mb-4">Hasil PCR</h3>
-                        <div className="flex items-start space-x-4">
-                            <div className="w-1/3 relative">
-                                <p className="text-brand-green font-semibold mb-1">Hasil Swab</p>
-                                <button
-                                onClick = { this.toggleHasil }
-                                className="flex w-full items-center bg-gray-200 border-4 border-gray-200 focus:outline-none rounded-lg">
-                                    <p
-                                    className="text-xl text-left flex-1 px-4 py-2">
-                                    Negatif Covid-19
-                                    </p>
-                                    <svg class="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
-                                </button>
-                                <p className="text-xs text-gray-700 leading-tight mt-2">Jika Positif Covid-19, maka tidak perlu dicentang</p>
-                                { this.state.isHasilSelected && (<div className="absolute border bg-white w-full mt-2 rounded-md py-2 divide-y">
-                                    { this.state.hasilSwab.map(hasil => (
-                                        <div
-                                        key = { hasil.id }
-                                        onClick = { this.toggleHasil }
-                                        className="text-lg p-2 cursor-pointer">{ hasil.value }</div>
-                                    )) }
-                                </div>)}
-                            </div>
-                            <div className="w-1/3 relative">
-                                <p className="text-brand-green font-semibold mb-1">Alat PCR</p>
-                                <button
-                                onClick = { this.togglePCR }
-                                className="flex w-full items-center bg-gray-200 border-4 border-gray-200 focus:outline-none rounded-lg">
-                                    <p
-                                    className="text-xl text-left flex-1 px-4 py-2">
-                                    PCR Tipe A
-                                    </p>
-                                    <svg class="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
-                                </button>
-                                { this.state.isPCRSelected && (<div className="absolute border bg-white w-full mt-2 rounded-md py-2 divide-y">
-                                    { this.state.alatPCR.map(pcr => (
-                                        <div
-                                        key = { pcr.id }
-                                        onClick = { this.togglePCR }
-                                        className="text-lg p-2 cursor-pointer">PCR Tipe { pcr.value }</div>
-                                    )) }
-                                </div>)}
-                            </div>
-                            <div className="w-1/3">
-                                <p className="text-brand-green font-semibold mb-1">CT PCR</p>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        className="w-full text-xl font-semibold pl-3 pr-10 py-2 bg-gray-200 placeholder-gray-400 outline-none border-4 border-gray-200 focus:border-brand-orange rounded-lg"
-                                        placeholder="35"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div> */}
 
                     <div className="flex space-x-4 mt-6">
                         <div className="w-1/2">
@@ -261,110 +204,27 @@ class AmbilSample extends Component {
                     </div>
                 </div>
 
-                {/* <div className="mt-5">
-                    <div 
-                        className="col-md-12 ml-auto mr-auto"
-                        style={{
-                            fontSize: '25px'
-                        }} 
-                    >
-                        <form onSubmit={this.handleSubmit}>
-                            
-                            <div className="row">
-                            
-                                <div className="col-md-12">
-                                    <div className="form-group">
-                                        <label>ID Pasien:</label>
-                                        <input 
-                                            className="form-control" 
-                                            type="text" 
-                                            value={this.props.patientId} 
-                                            onChange={this.handlePatientId}
-                                            style={{
-                                                fontSize: "25px"
-                                            }} 
-                                        />
-                                    </div>
-
-                                    <div className="form-group">
-                                        <input 
-                                            type="checkbox"
-                                            style={{
-                                                width: "25px",
-                                                height: "25px",
-                                                marginRight: "10px",
-                                                marginBottom: "10px",
-                                                marginTop: "10px"
-                                            }} 
-                                        />
-                                        <label className="ml-2">Negatif Covid-19</label>
-                                    </div>
-                                </div>
-                                
-                                <div className="col-md-4">
-                                    <div className="form-group">
-                                        <h4>Symptoms</h4>
-                                        {
-                                            this.state.diseases.map((disease) => {
-                                                return (<CheckBox handleCheckboxes={this.handleDiseaseCheckboxes} {...disease} />)
-                                            })
-                                        }
-                                    </div>
-                                </div>
-                                    
-                                <div className="col-md-4">
-                                    <div className="form-group">
-                                        <h4>Comorbidities</h4>
-                                        <CheckBox handleCheckboxes={this.handleComorbiditiesCheckboxes} {...this.state.comorbidities[0]} />
-                                        <CheckBox handleCheckboxes={this.handleComorbiditiesCheckboxes} {...this.state.comorbidities[1]} />
-                                        <CheckBox handleCheckboxes={this.handleComorbiditiesCheckboxes} {...this.state.comorbidities[2]} />
-                                        <CheckBox handleCheckboxes={this.handleComorbiditiesCheckboxes} {...this.state.comorbidities[3]} />
-                                        <CheckBox handleCheckboxes={this.handleComorbiditiesCheckboxes} {...this.state.comorbidities[4]} />
-                                        <CheckBox handleCheckboxes={this.handleComorbiditiesCheckboxes} {...this.state.comorbidities[5]} />
-                                        <CheckBox handleCheckboxes={this.handleComorbiditiesCheckboxes} {...this.state.comorbidities[6]} />
-                                        <CheckBox handleCheckboxes={this.handleComorbiditiesCheckboxes} {...this.state.comorbidities[7]} />
-                                        <CheckBox handleCheckboxes={this.handleComorbiditiesCheckboxes} {...this.state.comorbidities[8]} />
-                                    </div>
-                                </div>
-
-                                <div className="col-md-4">
-                                    <div className="form-group">
-                                        <h4>Comorbidities</h4>
-                                        <CheckBox handleCheckboxes={this.handleComorbiditiesCheckboxes} {...this.state.comorbidities[9]} />
-                                        <CheckBox handleCheckboxes={this.handleComorbiditiesCheckboxes} {...this.state.comorbidities[10]} />
-                                    </div>
-                                </div>
-                                
-                                <div className="col-md-12">
-                                    <div className="form-group">
-                                        <input 
-                                            style={{
-                                                borderRadius:'20px', 
-                                                width:'100%',
-                                                fontSize: '35px'
-                                            }} 
-                                            className="btn btn-success"
-                                            type="submit" 
-                                            value="Start Sampling" 
-                                        />
-                                    </div>
-                                </div>
+                {/* Open Modal */}
+                
+                {this.state.isModalOpen && (
+                    <div className="absolute h-full flex items-center bg-white w-full z-1 top-0">
+                        <div className="w-full mx-auto bg-white overflow-hidden text-center">
+                            <div className="items-center p-5">
+                                <p className="text-4xl font-semibold text-brand-green ">Siapkan selang dan pasang di ketiak!</p>
                             </div>
+                            <div className="space-x-3 text-center">
+                                <button 
+                                    onClick={ () => this.startSampling() }
+                                    className="bg-green-500 w-1/3 p-3 text-xl font-semibold text-white rounded-lg">Start Sampling</button>
+                                <button 
+                                    onClick={ () => this.setState({isModalOpen:false}) }
+                                    className="bg-orange-500 w-1/3 p-3 text-xl font-semibold text-white rounded-lg">Edit Gejala</button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
-                        </form>
-                        <button 
-                            style={{
-                                borderRadius:'20px', 
-                                width:'100%',
-                                fontSize: '35px'
-                            }} 
-                            className="btn btn-warning mb-5" 
-                            onClick={() => this.setState({redirect: '/menu'})}
-                        >
-                            Kembali
-                        </button>
-                    </div>                    
-                </div> */}
+                Close modal
             </div>
         )
     }

@@ -13,7 +13,7 @@ class Input extends Component {
 
   state = {
     layoutName: "numeric",
-    input: "",
+    input: this.props.value,
     isFocus: false
   };
 
@@ -64,9 +64,10 @@ class Input extends Component {
             placeholder={ this.props.label }
             onChange={ this.onChangeInput }
             onClick={ this.toggleKeyboard }
-            className="w-full text-xl font-semibold pl-2 pr-10 py-1 bg-gray-200 placeholder-gray-400 outline-none border-4 border-gray-200 focus:border-brand-orange rounded-lg"
+            className="w-full text-lg font-semibold pl-2 pr-10 py-1 bg-gray-200 placeholder-gray-400 outline-none border-4 border-gray-200 focus:border-brand-orange rounded-lg"
+            required={this.props.required ? this.props.required : false}
           />
-          <p className="absolute mx-3 text-xl text-gray-600 flex items-center inset-y-0 right-0">{ this.props.unit }</p>
+          <p className="absolute mx-3 text-sm text-gray-600 flex items-center inset-y-0 right-0">{ this.props.unit }</p>
         </div>
         {this.state.isFocus && (<div
         ref={this.setWrapperRef}

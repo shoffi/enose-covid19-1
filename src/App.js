@@ -30,7 +30,8 @@ class App extends Component {
             nurseId: "",
             ruangId: "",
             patientId: "",
-            covidStatus: 0,
+            covidStatus: "",
+            waktuTes: "",
 
             suhuTubuh: "",
             asamUrat: "",
@@ -38,9 +39,11 @@ class App extends Component {
             saturasiOksigen: "",
             gulaDarah: "",
             denyutJantung: "",
+
             tekananDarah: "",
             respirationRate: "",
             spo: "",
+
             ctPcr: "",
             ddimer: "",
             hemoglobin: "",
@@ -50,6 +53,10 @@ class App extends Component {
             bloodGas: "",
 
             toggleModal: false,
+
+            hasilSwab: "",
+            pcrTool:"",
+            bloodAnalysis:"",
 
             isConnected: false,
             proses1 : null,
@@ -75,6 +82,11 @@ class App extends Component {
         this.setNurseId = this.setNurseId.bind(this);
         this.setRuangId = this.setRuangId.bind(this);
         this.setPatientId = this.setPatientId.bind(this);
+        this.setWaktuTes = this.setWaktuTes.bind(this)
+        this.setHasilSwab = this.setHasilSwab.bind(this)
+        this.setPcrTool = this.setPcrTool.bind(this)
+        this.setBloodAnalysis = this.setBloodAnalysis.bind(this)
+        this.setCovidStatus = this.setCovidStatus.bind(this)
 
         this.setSuhuTubuh = this.setSuhuTubuh.bind(this);
         this.setAsamUrat = this.setAsamUrat.bind(this);
@@ -153,6 +165,31 @@ class App extends Component {
       });
     }
 
+    setWaktuTes(value) {
+      console.log('setWaktuTes =' + value)
+      this.setState({
+          waktuTes: value,
+      });
+    }
+
+    setHasilSwab(value) {
+      this.setState({
+          covidStatus: value,
+      });
+    }
+
+    setPcrTool(value) {
+      this.setState({
+          pcrTool: value,
+      });
+    }
+
+    setBloodAnalysis(value) {
+      this.setState({
+          bloodAnalysis: value,
+      });
+    }
+
     setSuhuTubuh (value) {
       this.setState({
           suhuTubuh: value,
@@ -181,6 +218,7 @@ class App extends Component {
       this.setState({
           gulaDarah: value,
       })
+      console.log(value)
     }
 
     setDenyutJantung (value) {
@@ -193,6 +231,7 @@ class App extends Component {
       this.setState({
           tekananDarah: value,
       })
+      console.log('tekananDarah' + value)
     }
 
     setRespirationRate (value) {
@@ -200,39 +239,52 @@ class App extends Component {
           respirationRate: value,
       })
     }
+
     setCtPcr (value) {
       this.setState({
         ctPcr: value,
       })
     }
+
     setDdimer (value) {
       this.setState({
         ddimer: value,
       })
     }
+
     setHemoglobin (value) {
       this.setState({
         hemoglobin: value,
       })
     }
+
     setLeukosit (value) {
       this.setState({
         leukosit: value,
       })
     }
+
     setTrombosit (value) {
       this.setState({
         trombosit: value,
       })
     }
+
     setLED (value) {
       this.setState({
         LED: value,
       })
     }
+
     setBloodGas (value) {
       this.setState({
         bloodGas: value,
+      })
+    }
+
+    setCovidStatus (value) {
+      this.setState({
+        covidStatus: value,
       })
     }
 
@@ -301,34 +353,65 @@ class App extends Component {
                 <RegisterPatient
                   patientId={this.state.patientId}
                   setPatientId={this.setPatientId}
+                  waktuTes={this.state.waktuTes}
+                  setWaktuTes={this.setWaktuTes}
                 />
               </Route>
 
               <Route path='/symptom-patient' exact>
                 <SymptomPatient
                   ctPcr={this.state.ctPcr}
-                  ddimer={this.state.ddimer}
                   setCtPcr={this.setCtPcr}
+                  
+                  ddimer={this.state.ddimer}
                   setDdimer={this.setDdimer}
+                  
+                  hemoglobin= {this.state.hemoglobin}
                   setHemoglobin = {this.setHemoglobin}
+
+                  leukosit= {this.state.leukosit}
                   setLeukosit = {this.setLeukosit}
+
+                  trombosit= {this.state.trombosit}
                   setTrombosit = {this.setTrombosit}
+
+                  LED= {this.state.LED}
                   setLED = {this.setLED}
+
+                  bloodGas= {this.state.bloodGas}
                   setBloodGas = {this.setBloodGas}
+                  
+                  covidStatus = {this.state.covidStatus}
+                  setCovidStatus = {this.setCovidStatus} 
+
+                  pcrTool = {this.state.pcrTool}
+                  setPcrTool = {this.setPcrTool}
+
+                  bloodAnalysis = {this.state.bloodAnalysis}
+                  setBloodAnalysis = {this.setBloodAnalysis}
                 />
               </Route>
 
               <Route path='/patient-detail' exact>
                   <PatientDetail
-                    setPatientId={this.setPatientId}
+                    setPatientId = {this.setPatientId}
+                    suhuTubuh = {this.state.suhuTubuh}
                     setSuhuTubuh = {this.setSuhuTubuh}
+                    asamUrat = {this.state.asamUrat}
                     setAsamUrat = {this.setAsamUrat}
+                    kolestrol = {this.state.kolestrol}
                     setKolestrol = {this.setKolestrol}
+                    saturasiOksigen = {this.state.saturasiOksigen}
                     setSaturasiOksigen = {this.setSaturasiOksigen}
+                    gulaDarah = {this.state.gulaDarah}
                     setGulaDarah = {this.setGulaDarah}
+                    denyutJantung = {this.state.asamUrat}
                     setDenyutJantung = {this.setDenyutJantung}
+                    tekananDarah = {this.state.tekananDarah}
                     setTekananDarah = { this.setTekananDarah }
+                    respirationRate = {this.state.respirationRate}
                     setRespirationRate = { this.setRespirationRate }
+                    spo = {this.state.spo}
                     setSpo = { this.setSpo }
                   />
               </Route>
@@ -345,6 +428,18 @@ class App extends Component {
                     saturasiOksigen= {this.state.saturasiOksigen}
                     gulaDarah= {this.state.gulaDarah}
                     denyutJantung= {this.state.denyutJantung}
+
+                    tekananDarah= {this.state.tekananDarah}
+                    respirationRate= {this.state.respirationRate}
+                    spo= {this.state.spo}
+
+                    ctPcr= {this.state.ctPcr}
+                    ddimer= {this.state.ddimer}
+                    hemoglobin= {this.state.hemoglobin}
+                    leukosit= {this.state.leukosit}
+                    trombosit= {this.state.trombosit}
+                    LED= {this.state.LED}
+                    bloodGas= {this.state.bloodGas}
                   />
               </Route>
 
@@ -355,21 +450,37 @@ class App extends Component {
               <Route path='/data-baru' exact>
                   <Menu/>
               </Route>
+              {/* <Route path="/main-chart" exact>
+                  <MainChart 
+                    {...props}
+                    proses1={this.state.proses1}
+                    proses2={this.state.proses2}
+                    proses3={this.state.proses3}
+                  />
+              </Route> */}
+              <Route 
+                path="/main-chart" 
+                render={(props) => (
+                  <MainChart 
+                    {...props}
+                    proses1={this.state.proses1}
+                    proses2={this.state.proses2}
+                    proses3={this.state.proses3}
 
-              { this.state.renderMainChart ?  
-                <Route 
-                  path="/main-chart" 
-                  render={(props) => (
-                    <MainChart 
-                      {...props}
-                      proses1={this.state.proses1}
-                      proses2={this.state.proses2}
-                      proses3={this.state.proses3}
-                    />
-                  )}
-                />
-                : null
-              }
+                    tekananDarah= {this.state.tekananDarah}
+                    respirationRate= {this.state.respirationRate}
+                    spo= {this.state.spo}
+
+                    ctPcr= {this.state.ctPcr}
+                    ddimer= {this.state.ddimer}
+                    hemoglobin= {this.state.hemoglobin}
+                    leukosit= {this.state.leukosit}
+                    trombosit= {this.state.trombosit}
+                    LED= {this.state.LED}
+                    bloodGas= {this.state.bloodGas}
+                  />
+                )}
+              />
 
               <Route path='/pengaturan' exact>
                   <Pengaturan 
