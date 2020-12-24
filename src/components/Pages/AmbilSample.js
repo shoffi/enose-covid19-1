@@ -168,15 +168,15 @@ class AmbilSample extends Component {
                             <div className="bg-purple-200 bg-opacity-25 p-3 rounded-xl h-72 scrolling-touch overflow-y-scroll">
                                 {this.state.diseases.map(item => (
                                     <div className="w-full">
-                                        <label class="inline-flex items-center w-full">
+                                        <label className="inline-flex items-center w-full">
                                             <input
                                                 type="checkbox"
                                                 checked={item.isChecked}
                                                 onClick={this.handleDiseaseCheckboxes}
                                                 value={item.value}
-                                                class="form-checkbox h-8 w-8 text-purple-600 rounded-xl"
+                                                className="form-checkbox h-8 w-8 text-purple-600 rounded-xl"
                                             ></input>
-                                            <span class="ml-3 text-gray-800 text-xl">{item.value}</span>
+                                            <span className="ml-3 text-gray-800 text-xl">{item.value}</span>
                                         </label>
                                     </div>
                                 ))}
@@ -187,15 +187,15 @@ class AmbilSample extends Component {
                             <div className="bg-yellow-200 bg-opacity-25 p-3 rounded-xl h-72 scrolling-touch overflow-y-scroll">
                                 {this.state.comorbidities.map(item => (
                                     <div className="w-full">
-                                        <label class="inline-flex items-center w-full">
+                                        <label className="inline-flex items-center w-full">
                                             <input
                                                 type="checkbox"
                                                 checked={item.isChecked}
                                                 onClick={this.handleComorbiditiesCheckboxes}
                                                 value={item.value}
-                                                class="form-checkbox h-8 w-8 text-orange-600 rounded-xl"
+                                                className="form-checkbox h-8 w-8 text-orange-600 rounded-xl"
                                             ></input>
-                                            <span class="ml-3 text-gray-800 text-xl">{item.value}</span>
+                                            <span className="ml-3 text-gray-800 text-xl">{item.value}</span>
                                         </label>
                                     </div>
                                 ))}

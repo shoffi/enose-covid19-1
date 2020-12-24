@@ -56,7 +56,7 @@ class Input extends Component {
   render() {
     return (
       <div className="relative">
-        <label className="block font-semibold text-brand-green mb-1">{ this.props.label }</label>
+        <label className="block text-xl font-semibold text-brand-green mb-1">{ this.props.label }</label>
         <div className="relative">
           <input
             type="text"
@@ -64,7 +64,7 @@ class Input extends Component {
             placeholder={ this.props.label }
             onChange={ this.onChangeInput }
             onClick={ this.toggleKeyboard }
-            className="w-full text-lg font-semibold pl-2 pr-10 py-1 bg-gray-200 placeholder-gray-400 outline-none border-4 border-gray-200 focus:border-brand-orange rounded-lg"
+            className="w-full text-xl font-semibold pl-2 pr-10 py-2 bg-gray-200 placeholder-gray-500 outline-none border-2 border-gray-600 focus:bg-white focus:border-brand-orange rounded-lg"
             required={this.props.required ? this.props.required : false}
           />
           <p className="absolute mx-3 text-sm text-gray-600 flex items-center inset-y-0 right-0">{ this.props.unit }</p>

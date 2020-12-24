@@ -320,14 +320,14 @@ class App extends Component {
     render() {
 
       return (
-        <div className="relative">
+        <div className="relative bg-white">
 
-          <div className="fixed w-full bg-white z-20 border-b px-4 py-2">
+          <div className="fixed w-full bg-white z-20 px-4 py-2">
             <TopNav></TopNav>
           </div>
 
           <Router>
-            <div className="container mx-auto min-h-screen flex z-0 py-20">
+            <div className="container mx-auto min-h-screen flex z-0 py-16">
             
               <Route path='/' exact>
                   <Welcome

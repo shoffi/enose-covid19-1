@@ -146,8 +146,8 @@ class AmbilSample extends Component {
                     />
         }
 
-        if(this.props.covidStatus == 8){
-            if(this.props.ctPcr != ''){
+        if(this.props.covidStatus === 8){
+            if(this.props.ctPcr !== ''){
                 this.props.setPcrTool('')
                 this.props.setCtPcr('')
             }
@@ -255,7 +255,7 @@ class AmbilSample extends Component {
                     setBack={() => this.setState({redirect: '/patient-detail'})}
                     setNext={
                         () => {
-                            if(this.props.covidStatus == ''){
+                            if(this.props.covidStatus === ''){
                                 // alert(this.props.covidStatus)
                                 alert('Hasil Swab harus diisi!')
                             }else{
@@ -278,7 +278,7 @@ class AmbilSample extends Component {
                               className="text-xl text-left flex-1 px-3 py-1">
                                 {hasil_swab}
                               </p>
-                              <svg class="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                              <svg className="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
                           </button>
                           <p className="text-xs text-gray-700 leading-tight mt-2">Jika tidak ada hasil swab hari ini, maka pilih<br /><span className="font-bold text-brand-green">tidak diketahui</span></p>
                           { this.state.isHasilSelected && (<div className="absolute z-10 h-56 scrolling-touch overflow-y-scroll border bg-white w-full mt-2 rounded-md py-1 divide-y">
@@ -291,7 +291,7 @@ class AmbilSample extends Component {
                           </div>)}
                       </div>
 
-                    { (this.props.covidStatus != 8) &&
+                    { (this.props.covidStatus !== 8) &&
                         (
                             <>
                             <div className="w-1/3 relative">
@@ -303,7 +303,7 @@ class AmbilSample extends Component {
                                     className="text-xl text-left flex-1 px-4 py-1">
                                         {alatPcr}
                                     </p>
-                                    <svg class="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                                    <svg className="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
                                 </button>
                                 { this.state.isPCRSelected && (<div className="absolute z-10 border bg-white w-full mt-2 rounded-md py-2 divide-y">
                                     { this.state.alatPCR.map(pcr => (
@@ -340,7 +340,7 @@ class AmbilSample extends Component {
                             className="text-xl text-left flex-1 px-3 py-1">
                                 {bloodAnalysis}
                             </p>
-                            <svg class="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                            <svg className="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         { this.state.isbloodAnalysisSelected && 
                             (

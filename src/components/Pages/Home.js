@@ -96,16 +96,16 @@ class Home extends Component {
                         required={true}
                         />
                         <div>
-                            <p className="text-brand-green mb-1">Ruangan</p>
+                            <p className="text-brand-green text-lg font-semibold mb-1">Ruangan</p>
                             <p>{this.state.isModalOpen}</p>
                             <button
                             onClick={this.openModal}
-                            className="flex w-full items-center bg-gray-200 border-4 border-gray-200 focus:outline-none rounded-lg">
+                            className="flex w-full items-center bg-gray-200 border-2 border-gray-600 focus:outline-none rounded-lg">
                                 <p
-                                className="text-left flex-1 font-semibold px-4 py-2">
+                                className="text-left text-lg flex-1 font-semibold p-2">
                                 {ruangan}
                                 </p>
-                                <svg class="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                                <svg className="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
                             </button>
                         </div>
                     </div>
@@ -113,7 +113,7 @@ class Home extends Component {
                     onClick={this.handleSubmit}
                     disabled={!this.props.nurseId && !this.props.ruangId.id}
                     className={`${this.props.nurseId && this.props.ruangId.id ? 'bg-brand-orange' : 'bg-gray-400 cursor-not-allowed'} items-center justify-center w-48 h-48 text-white focus:outline-none rounded-md`}>
-                        <svg class="mx-auto w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                        <svg className="mx-auto w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
                         <p className="text-xl font-semibold">Masuk</p>
                     </button>
                 </div>
@@ -122,11 +122,11 @@ class Home extends Component {
                 
                 {this.state.isModalOpen && (
                     <div className="absolute min-h-screen flex items-center bg-white w-full">
-                        <div className="mx-auto w-2/3 bg-white border-4 border-brand-green rounded-lg overflow-hidden">
-                            <div className="flex items-center p-3">
-                                <p className="text-2xl font-semibold text-brand-green">Pilih Ruangan</p>
+                        <div className="mx-auto w-72 border-2 border-brand-green rounded-lg overflow-hidden">
+                            <div className="flex items-center bg-brand-green p-3">
+                                <p className="text-xl text-center w-full font-semibold text-white">Pilih Ruangan</p>
                             </div>
-                            <ul className="bg-gray-100 divide-y-2 divide-gray-200 text-2xl text-gray-700">
+                            <ul className="text-xl text-center font-semibold text-gray-700">
                                 {this.state.ruangan.map(kamar => (
                                     <li
                                         key={kamar.id}
