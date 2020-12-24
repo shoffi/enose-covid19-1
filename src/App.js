@@ -12,8 +12,9 @@ import MainChart from "./components/Pages/MainChart";
 import Welcome from "./components/Pages/Welcome";
 import Pengaturan from "./components/Pages/Pengaturan";
 import Modal from './components/Modal';
-import RegisterPatient from './components/Pages/RegisterPatient'
-import SymptomPatient from './components/Pages/SymptomPatient'
+import RegisterPatient from './components/Pages/RegisterPatient';
+import SymptomPatient from './components/Pages/SymptomPatient';
+import DataBaru from "./components/Pages/DataBaru";
 
 const { ipcRenderer } = window; 
 
@@ -448,24 +449,24 @@ class App extends Component {
               </Route>
 
               <Route path='/data-baru' exact>
-                  <Menu/>
+                <DataBaru 
+                nurseId={this.state.nurseId}
+                ruangId={this.state.ruangId}
+                setNurseId={this.setNurseId}
+                setRuangId={this.setRuangId}
+                ruangan={this.state.ruangan}
+                />
               </Route>
-              {/* <Route path="/main-chart" exact>
-                  <MainChart 
-                    {...props}
-                    proses1={this.state.proses1}
-                    proses2={this.state.proses2}
-                    proses3={this.state.proses3}
-                  />
-              </Route> */}
-              <Route 
-                path="/main-chart" 
+              
+              <Route path="/main-chart" 
                 render={(props) => (
                   <MainChart 
                     {...props}
                     proses1={this.state.proses1}
                     proses2={this.state.proses2}
                     proses3={this.state.proses3}
+
+                    waktuTes={this.state.waktuTes}
 
                     tekananDarah= {this.state.tekananDarah}
                     respirationRate= {this.state.respirationRate}
@@ -480,7 +481,7 @@ class App extends Component {
                     bloodGas= {this.state.bloodGas}
                   />
                 )}
-              />
+              ></Route>
 
               <Route path='/pengaturan' exact>
                   <Pengaturan 
@@ -490,6 +491,7 @@ class App extends Component {
                     forceUpdateHandler = {this.forceUpdateHandler}
                   />
               </Route>
+
           </div>
           
           <div className="absolute top-0 w-full z-10">
@@ -513,7 +515,6 @@ class App extends Component {
                   setToggleModal = {this.setToggleModal}
               />
           </div>
-
           </Router>
           
         </div>

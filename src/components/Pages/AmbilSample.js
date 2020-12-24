@@ -223,8 +223,6 @@ class AmbilSample extends Component {
                         </div>
                     </div>
                 )}
-
-                Close modal
             </div>
         )
     }

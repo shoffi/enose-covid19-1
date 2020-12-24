@@ -20,7 +20,6 @@ class PatientDetail extends Component {
   }
 
   toggleWaktu(id) {
-    console.log('waktu = ' + id)
     this.setState({
       isWaktuSelected: !this.state.isWaktuSelected
     })

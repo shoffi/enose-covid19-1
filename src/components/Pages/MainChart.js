@@ -58,7 +58,7 @@ class MainChart extends Component {
         let resultComorbidities = Object.keys(comorbidities).map( (key) => [comorbidities[key].isChecked ] )
         arrayAll = resultDisease.concat(resultComorbidities)
 
-        // console.log(this.state)
+        // alert(this.props.waktuTes)
 
         let detailPatient = {
             'nurse_id': this.props.location.state.nurse_id,
@@ -67,6 +67,7 @@ class MainChart extends Component {
             'covid_status': this.props.location.state.covidStatus,
             'pcr_tool': this.props.location.state.pcr_tool,
             'ct_pcr': this.props.location.state.ct_pcr,
+            'waktu_tes': this.props.waktuTes
         }
 
         // pcr_tool & ct_pcr
@@ -220,16 +221,13 @@ class MainChart extends Component {
                 let presentase = parseInt((now/totalTime)*100)
 
                 if(presentase >= 100) {
-
-
                     this.openModal()
-                    // alert('hahaha')
-
                     ipcRenderer.removeAllListeners('python-data')
                 }
                 
                 data = data.split(';')
-                ipcRenderer.send('recording', data, presentase, sampling_id, sync_status)
+
+                ipcRenderer.send('recording', data, presentase, this.props.location.state.patient_id, sampling_id, sync_status)
 
                 timeArray.push(Math.round((new Date()).getTime() / 1000))
                 sensor0Array.push(data[0])
@@ -303,8 +301,8 @@ class MainChart extends Component {
                     <div className="flex-1 relative rounded-lg overflow-hidden">
                         <div className="bg-gray-300 w-full h-full "></div>
                         <div
-                        style={{width: `${this.state.completed}%`}}
-                        className="absolute top-0 bg-green-500 h-full transition-all ease-out duration-500">
+                            style={{width: `${this.state.completed}%`}}
+                            className="absolute top-0 bg-green-500 h-full transition-all ease-out duration-500">
                         </div>
                     </div>
                     

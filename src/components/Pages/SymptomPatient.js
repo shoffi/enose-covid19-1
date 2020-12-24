@@ -33,6 +33,7 @@ class AmbilSample extends Component {
             ],
             isHasilSelected: false,
             bloodAnalysis: [
+                { id: 5, value: 'Normal'},
                 { id: 1, value: 'Asidosis respiratorik'},
                 { id: 2, value: 'Asidosis metabolik'},
                 { id: 3, value: 'Alkalosis resporatorik'},
@@ -145,6 +146,13 @@ class AmbilSample extends Component {
                     />
         }
 
+        if(this.props.covidStatus == 8){
+            if(this.props.ctPcr != ''){
+                this.props.setPcrTool('')
+                this.props.setCtPcr('')
+            }
+        }
+
         let hasil_swab;
         switch (this.props.covidStatus) {
             case 1:
@@ -213,6 +221,10 @@ class AmbilSample extends Component {
 
         let bloodAnalysis;
         switch (this.props.bloodAnalysis) {
+            case 5:
+                bloodAnalysis = "Normal"
+                break;
+
             case 1:
                 bloodAnalysis = "Asidosis respiratorik"
                 break;
@@ -241,7 +253,16 @@ class AmbilSample extends Component {
                     back={true}
                     next={true}
                     setBack={() => this.setState({redirect: '/patient-detail'})}
-                    setNext={() => this.setState({redirect: '/ambil-sample'})}
+                    setNext={
+                        () => {
+                            if(this.props.covidStatus == ''){
+                                // alert(this.props.covidStatus)
+                                alert('Hasil Swab harus diisi!')
+                            }else{
+                                this.setState({redirect: '/ambil-sample'})
+                            }
+                        }
+                    }
                     setNextName={'Gejala Pasien'}
                 ></TitleBar>
 
@@ -270,36 +291,42 @@ class AmbilSample extends Component {
                           </div>)}
                       </div>
 
-                      <div className="w-1/3 relative">
-                          <p className="text-brand-green font-semibold mb-1">Alat PCR</p>
-                          <button
-                          onClick = { () => this.togglePCR(-1) }
-                          className="flex w-full items-center bg-gray-200 border-4 border-gray-200 focus:outline-none rounded-lg">
-                              <p
-                              className="text-xl text-left flex-1 px-4 py-1">
-                                  {alatPcr}
-                              </p>
-                              <svg class="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
-                          </button>
-                          { this.state.isPCRSelected && (<div className="absolute z-10 border bg-white w-full mt-2 rounded-md py-2 divide-y">
-                              { this.state.alatPCR.map(pcr => (
-                                  <div
-                                  key = { pcr.id }
-                                  onClick = { () => this.togglePCR(pcr.id) }
-                                  className="p-2 cursor-pointer">PCR Tipe { pcr.value }</div>
-                              )) }
-                          </div>)}
-                      </div>
+                    { (this.props.covidStatus != 8) &&
+                        (
+                            <>
+                            <div className="w-1/3 relative">
+                                <p className="text-brand-green font-semibold mb-1">Alat PCR</p>
+                                <button
+                                onClick = { () => this.togglePCR(-1) }
+                                className="flex w-full items-center bg-gray-200 border-4 border-gray-200 focus:outline-none rounded-lg">
+                                    <p
+                                    className="text-xl text-left flex-1 px-4 py-1">
+                                        {alatPcr}
+                                    </p>
+                                    <svg class="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                                { this.state.isPCRSelected && (<div className="absolute z-10 border bg-white w-full mt-2 rounded-md py-2 divide-y">
+                                    { this.state.alatPCR.map(pcr => (
+                                        <div
+                                        key = { pcr.id }
+                                        onClick = { () => this.togglePCR(pcr.id) }
+                                        className="p-2 cursor-pointer">PCR Tipe { pcr.value }</div>
+                                    )) }
+                                </div>)}
+                            </div>
 
-                      <div className="w-1/3">
-                        <CustomInput
-                            data={this.props.ctPcr}
-                            value={this.props.ctPcr}
-                            label={"CT PCR"}
-                            unit={""}
-                            onchange={ this.props.setCtPcr }
-                        />
-                      </div>
+                            <div className="w-1/3">
+                                <CustomInput
+                                    data={this.props.ctPcr}
+                                    value={this.props.ctPcr}
+                                    label={"CT PCR"}
+                                    unit={""}
+                                    onchange={ this.props.setCtPcr }
+                                />
+                            </div>
+                            </>
+                        )
+                    }
 
                   </div>
                   <hr className="my-5" />
@@ -369,6 +396,15 @@ class AmbilSample extends Component {
                         value={this.props.LED}
                         label={"LED"}
                         unit={""}
+                        onchange={ this.props.setLED }
+                        />
+                    </div>
+                    <div>
+                        <CustomInput
+                        data={this.props.LED}
+                        value={this.props.LED}
+                        label={"Limfosit"}
+                        unit={"Lymph"}
                         onchange={ this.props.setLED }
                         />
                     </div>

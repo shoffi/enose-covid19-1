@@ -2,12 +2,15 @@ const fs = require('fs');
 const url = require('url');
 const path = require('path');
 const mysql = require('mysql');
+const AdmZip = require('adm-zip');
 const request = require('request');
+var FormData = require('form-data');
 const Store = require('./Store.js');
 const Log = require('./Log.js');
 const electron = require('electron');
 const modal = require('electron-modal');
 const PythonShell = require('python-shell');
+const Json2csvParser = require("json2csv").Parser;
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const { resolve } = require('path');
 
@@ -31,7 +34,6 @@ const sensorLogger = new Log({configName: 'sensor-log'})
 
 // MySQl Connection
 let { host, user, password, database } = store.get('database');
-console.log(host)
 
 let connection = mysql.createConnection({
     host    :   host,
@@ -228,7 +230,7 @@ function getMaxSensorDataIdCloud() {
 
 ipcMain.on('storePatient', (event, input, detailPatient, clinical_data) => {
     
-    console.log(detailPatient)
+    // console.log(detailPatient)
 
     let sampling = {        
         rs_id       :   1,
@@ -236,6 +238,7 @@ ipcMain.on('storePatient', (event, input, detailPatient, clinical_data) => {
         room_id     :   detailPatient.ruang_id.id,
         patient_id  :   detailPatient.patient_id,
         covid_status:   detailPatient.covid_status,
+        waktu_tes   :   detailPatient.waktu_tes,
         pcr_tool    :   detailPatient.pcr_tool ? detailPatient.pcr_tool :null,
         ct_pcr      :   detailPatient.ct_pcr ? detailPatient.ct_pcr : null,
 
@@ -280,7 +283,7 @@ ipcMain.on('storePatient', (event, input, detailPatient, clinical_data) => {
         created_at: timestamp(),
     }
 
-    console.log('clinical data row = '+ JSON.stringify(clicinal_data_row))
+    // console.log('clinical data row = '+ JSON.stringify(clicinal_data_row))
 
     let insertSamplingPromise = new Promise(function(myResolve, myReject) {
         // "Producing Code" (May take some time)
@@ -294,7 +297,7 @@ ipcMain.on('storePatient', (event, input, detailPatient, clinical_data) => {
             clicinal_data_row.sampling_id = result.insertId
 
             async function synchronizedDB() {
-                console.log('Syncronizing Check')
+                // console.log('Syncronizing Check')
 
                 sampling.id = result.insertId
 
@@ -303,6 +306,8 @@ ipcMain.on('storePatient', (event, input, detailPatient, clinical_data) => {
                     'sampling_id' : result.insertId,
                     'sync'        : false
                 }
+
+                console.log(resolveValue)
 
                 myResolve(resolveValue);
     
@@ -380,7 +385,7 @@ ipcMain.on('storePatient', (event, input, detailPatient, clinical_data) => {
                 }
                 else{
                     // logging gagal masukin ke cloud sampling
-                    console.log('logging gagal masukin ke cloud sampling')
+                    // console.log('logging gagal masukin ke cloud sampling')
                     samplingLogger.insert(value.sampling)
                     clicinal_data_row.id = clicinal_data_res.insertId
                     clinicalLogger.insert(clicinal_data_row)
@@ -404,13 +409,29 @@ let content = header
 
 let isShowSaveDialog = 0
 
-ipcMain.on('recording', (event, data, presentase, sampling_id, sync_status) => {
-    console.log("presentase = "+presentase)
-    console.log(isShowSaveDialog)
+ipcMain.on('recording', (event, data, presentase, patient_id, sampling_id, sync_status) => {
+    
     if( presentase >= 100 && isShowSaveDialog==0)
     {
-        isShowSaveDialog = 1
+        // isShowSaveDialog = 1
         clearInterval(startResponse)
+        let dir = app.getPath('documents') + '/enose-csv'
+        
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir);
+        }
+
+        let filePath = dir + '/'+patient_id+'_'+sampling_id+'.csv'
+
+        fs.writeFile(filePath, content, (err) => {
+            if(err) {
+                console.log('error in creating file: '+ err.message)
+            } else{
+                console.log(`file ${filePath} successfully created!`)
+                content = header
+            }
+        })
+
         // console.log(`masuk 100!`)
 
         // let saveOptions = {
@@ -694,6 +715,10 @@ const sleep = (duration) => {
     )
 }
 
+// const inserEachSensor = (data) => {
+//     new Promise
+// }
+
 const insertSensor = (sensor_json) => {
     return new Promise( (resolve, reject) => {
         try {
@@ -703,25 +728,25 @@ const insertSensor = (sensor_json) => {
                 }else{
                     let sensorJsonData = JSON.parse(sensorJsonString)
                     
-                        sensorJsonData.forEach(async(element) => {
-                            element.database = cloud_database
-                            await sleep(1000)
-                            request.post(
-                                `http://${cloud_host}/sync_sensor_data`,
-                                {
-                                    json: element,
-                                },
-                                (error, res, body) => {
-                                    if(error) {
-                                        throw error;
-                                    }else{
-                                        //sensorJsonData.shift()
-                                        //fs.writeFileSync(sensor_json, JSON.stringify(sensorJsonData));
-                                        console.log(body)
-                                    }
+                    sensorJsonData.forEach(async(element) => {
+                        element.database = cloud_database
+                        await sleep(1000)
+                        request.post(
+                            `http://${cloud_host}/sync_sensor_data`,
+                            {
+                                json: element,
+                            },
+                            (error, res, body) => {
+                                if(error) {
+                                    throw error;
+                                }else{
+                                    //sensorJsonData.shift()
+                                    //fs.writeFileSync(sensor_json, JSON.stringify(sensorJsonData));
+                                    console.log(body)
                                 }
-                            ) 
-                        });
+                            }
+                        ) 
+                    });
                     
                     resolve(sensorJsonString)
                 }
@@ -733,7 +758,7 @@ const insertSensor = (sensor_json) => {
     })
 }
 
-ipcMain.on('dbSync', async (event) => {
+ipcMain.on('dbSyncOld', async (event) => {
     console.log('synchronization process')
 
     let sampling_json = path.join(userDataPath, 'sampling-log.json');
@@ -750,3 +775,137 @@ ipcMain.on('dbSync', async (event) => {
     // sinkronisasi database selesai
     mainWindow.send('dbSyncDone')
 })
+
+ipcMain.on('dbSync', async (event) => {
+    console.log('####### PROSES SINKRONISASI ####### ')
+    
+    const ZeroToOne = () => {
+        return new Promise( (resolve, reject) => {
+            connection.query('update sensor_data set cloud_backup = 1 where cloud_backup = 0', (err, res) => {
+                if (err){
+                    reject()
+                }
+                else {
+                    resolve(res)
+                }
+            })
+        } )
+    }
+
+    const getSamplingSync = () => {
+        return new Promise( (resolve, reject) => {
+            connection.query('select * from sensor_data where cloud_backup = 1', (err, res) => {
+                if (err){
+                    reject()
+                }
+                else {
+                    resolve(res)
+                }
+            })
+        } )
+    }
+
+    const SQLtoCSV = (data) => {
+        return new Promise( (resolve, reject) => {
+            try {
+                const json2csvParser = new Json2csvParser({ header: true});
+                const csv = json2csvParser.parse(data);
+
+                let dir = app.getPath('documents') + '/enose-csv/db-csv'
+            
+                if (!fs.existsSync(dir)) {
+                    fs.mkdirSync(dir);
+                }
+
+                let namaCSV = path.join(dir + '/' + cloud_database + ' ' + timestamp() +'.csv')
+                // let namaCSV = path.join(dir + '/' + cloud_database +'.csv')
+                
+                fs.writeFile( namaCSV, csv, function(error) {
+                    if (error) reject()
+
+                    resolve(namaCSV)
+                })
+            } catch (error) {
+                reject()
+            }
+        } )
+    }
+
+    const CSVtoZIP = (file) => {
+        return new Promise ( (resolve, reject) => {
+            try {
+                let namaZIP = file.replace('.csv','.zip')
+                const zip = new AdmZip()
+                zip.addLocalFile(file)
+                zip.writeZip(namaZIP);
+                console.log(namaZIP)
+                resolve(namaZIP)
+            } catch (error) {
+                reject()
+            }
+        } )
+    }
+
+    const uploadZIP = (file) => {
+        return new Promise( (resolve, reject) => {
+            try {
+                console.log('masuk uploadZIP')
+                console.log(file)
+                let form = {
+                    'hello': "haihai",
+                    'zip': fs.createReadStream(file),
+                };
+                
+                request.post({url:`http://${cloud_host}/upload_zip`, formData: form}, function(err, httpResponse, body) {
+                    if (err) {
+                        console.log(err);
+                        reject()
+                    }else{
+                        console.log('HAHAHAHAHAHAH')
+                        resolve()
+                    }
+                });
+                // let form = request.form()
+                // form.append('zip', fs.createReadStream(file));
+                // form.submit(`http://${cloud_host}/upload_zip`, function(err, res) {
+                //     if (error) {
+                //         console.error(error)
+                //         return
+                //     }
+                //     console.log(res)
+                //     resolve()
+                // });
+            } catch (error) {
+                reject()
+                throw error
+            }
+        } )
+    }
+
+    const OneToTwo = () => {
+        return new Promise( (resolve, reject) => {
+            connection.query('update sensor_data set cloud_backup = 2 where cloud_backup = 1', (err, res) => {
+                if (err){
+                    reject()
+                }
+                else {
+                    resolve(res)
+                }
+            })
+        } )
+    }
+    
+    const Sync = async () => {
+        await ZeroToOne()
+        let sampling_rows = await getSamplingSync()
+        let sql2csv = await SQLtoCSV(sampling_rows)
+        let csv2zip = await CSVtoZIP(sql2csv)
+        console.log("csv2zip = "+csv2zip)
+        await uploadZIP(csv2zip)
+        await OneToTwo()
+        mainWindow.send('dbSyncDone')
+    }
+    
+    Sync()
+})
+

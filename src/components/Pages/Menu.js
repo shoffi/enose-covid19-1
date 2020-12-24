@@ -71,7 +71,9 @@ class Home extends Component {
                             className="object-contain w-full h-32 lg:h-48"
                             alt="Covid" />
                         </div>
-                        <button className="bg-gray-500 w-full p-3 text-xl font-semibold text-white cursor-not-allowed opacity-50 rounded-lg">Data Baru</button>
+                        <button
+                        onClick={() => this.setState({redirect: '/data-baru'})}
+                        className="bg-orange-500 w-full p-3 text-xl font-semibold text-white rounded-lg">Data Baru</button>
                     </div>
                 </div>
 

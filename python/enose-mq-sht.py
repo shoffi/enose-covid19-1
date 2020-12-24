@@ -1,18 +1,35 @@
 import time
 #import Adafruit_GPIO.SPI as SPI
-import Adafruit_GPIO.SPI as SPI
 #import Adafruit_MCP3008
 import math
-import Adafruit_DHT
 import ADS1256
 import sys
+import smbus
 
-DHT_SENSOR = Adafruit_DHT.DHT22
-DHT_PIN = 7
 
-# SPI_PORT   = 0
-# SPI_DEVICE = 0
-# mcp = Adafruit_MCP3008.MCP3008(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
+#*************SHT***********
+# Get I2C bus
+bus = smbus.SMBus(1) 
+# SHT31 address, 0x44(68)
+bus.write_i2c_block_data(0x44, 0x2C, [0x06]) # b669fbc0
+#print(bus)
+time.sleep(0.5)
+# SHT31 address, 0x44(68)
+# Read data back from 0x00(00), 6 bytes
+# Temp MSB, Temp LSB, Temp CRC, Humididty MSB, Humidity LSB, Humidity CRC
+data = bus.read_i2c_block_data(0x44, 0x00, 6)
+# Convert the data
+temp = data[0] * 256 + data[1]
+#print(temp)
+x = -45 + (175 * temp / 65535.0)
+fTemp = -49 + (315 * temp / 65535.0)
+y = 100 * (data[3] * 256 + data[4]) / 65535.0
+
+cTemp  = float("{:.3f}".format(x))
+humidity = float("{:.3f}".format(y))
+
+
+
 
 
 
@@ -320,16 +337,6 @@ def readAndSendSensorData():
   temp_dht = 0 
   humi_dht = 0
   MQGetSampleRs() #//250ms
-  humidity, temperature = Adafruit_DHT.read(DHT_SENSOR, DHT_PIN)
-  if humidity is not None and temperature is not None:
-     x = temperature
-     y = humidity
-     temp_dht = float("{:.5f}".format(x))
-     humi_dht = float("{:.5f}".format(y))
-     return temp_dht, humi_dht;
-  else:
-     temp_dht = 0
-     humi_dht = 0 
   sendData = ""
   
   # for j in range (0, NUM_SENSOR):
@@ -372,9 +379,9 @@ def readAndSendSensorData():
       sendData += ";"
       sendData += str("0") #9
       sendData += ";"
-      sendData += str(temp_dht) #10
+      sendData += str(cTemp) #10
       sendData += ";"
-      sendData += str(humi_dht) #11
+      sendData += str(humidity) #11
       sendData += ";"  
       sendData += str(MQGetGasPercentage(MQ_RS_RO[j], MQ2_LPG)) #12
       sendData += ";";
