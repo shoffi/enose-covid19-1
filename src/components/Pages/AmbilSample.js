@@ -160,46 +160,45 @@ class AmbilSample extends Component {
                     ></TitleBar>
                 )}
 
-                <div className="py-8">
-
-                    <div className="flex space-x-4 mt-6">
-                        <div className="w-1/2">
-                            <h3 className="text-lg text-gray-800 font-semibold mb-3 px-3">Gejala</h3>
-                            <div className="bg-purple-200 bg-opacity-25 p-3 rounded-xl h-72 scrolling-touch overflow-y-scroll">
-                                {this.state.diseases.map(item => (
-                                    <div className="w-full">
-                                        <label className="inline-flex items-center w-full">
-                                            <input
-                                                type="checkbox"
-                                                checked={item.isChecked}
-                                                onClick={this.handleDiseaseCheckboxes}
-                                                value={item.value}
-                                                className="form-checkbox h-8 w-8 text-purple-600 rounded-xl"
-                                            ></input>
-                                            <span className="ml-3 text-gray-800 text-xl">{item.value}</span>
-                                        </label>
-                                    </div>
-                                ))}
-                            </div>
+                <div className="flex space-x-4 mt-6">
+                    <div className="w-1/2">
+                        <h3 className="text-lg text-brand-green font-semibold mb-1 px-3">Gejala</h3>
+                        <div className="bg-purple-200 bg-opacity-25 space-y-1 border-2 border-purple-600 p-3 rounded-xl h-64 scrolling-touch overflow-y-scroll">
+                            {this.state.diseases.map(item => (
+                                <div className="w-full">
+                                    <label className="inline-flex items-center w-full">
+                                        <input
+                                            key={item.id}
+                                            type="checkbox"
+                                            checked={item.isChecked}
+                                            onClick={this.handleDiseaseCheckboxes}
+                                            value={item.value}
+                                            className="form-checkbox h-6 w-6 text-purple-600 rounded-xl"
+                                        ></input>
+                                        <span className="ml-3 text-gray-800 font-semibold text-lg">{item.value}</span>
+                                    </label>
+                                </div>
+                            ))}
                         </div>
-                        <div className="w-1/2">
-                            <h3 className="text-lg text-gray-800 font-semibold mb-3 px-3">Penyakit Bawaan</h3>
-                            <div className="bg-yellow-200 bg-opacity-25 p-3 rounded-xl h-72 scrolling-touch overflow-y-scroll">
-                                {this.state.comorbidities.map(item => (
-                                    <div className="w-full">
-                                        <label className="inline-flex items-center w-full">
-                                            <input
-                                                type="checkbox"
-                                                checked={item.isChecked}
-                                                onClick={this.handleComorbiditiesCheckboxes}
-                                                value={item.value}
-                                                className="form-checkbox h-8 w-8 text-orange-600 rounded-xl"
-                                            ></input>
-                                            <span className="ml-3 text-gray-800 text-xl">{item.value}</span>
-                                        </label>
-                                    </div>
-                                ))}
-                            </div>
+                    </div>
+                    <div className="w-1/2">
+                        <h3 className="text-lg text-brand-green font-semibold mb-1 px-3">Penyakit Bawaan</h3>
+                        <div className="bg-yellow-200 bg-opacity-25 space-y-1 border-2 border-yellow-600 p-3 rounded-xl h-64 scrolling-touch overflow-y-scroll">
+                            {this.state.comorbidities.map(item => (
+                                <div className="w-full">
+                                    <label className="inline-flex items-center w-full">
+                                        <input
+                                            key={item.id}
+                                            type="checkbox"
+                                            checked={item.isChecked}
+                                            onClick={this.handleComorbiditiesCheckboxes}
+                                            value={item.value}
+                                            className="form-checkbox h-6 w-6 text-orange-600 rounded-xl"
+                                        ></input>
+                                        <span className="ml-3 text-gray-800 font-semibold text-lg">{item.value}</span>
+                                    </label>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>

@@ -62,7 +62,7 @@ class Home extends Component {
                             className="object-contain w-full h-32 lg:h-48"
                             alt="History" />
                         </div>
-                        <button className="bg-gray-500 w-full p-3 text-xl font-semibold text-white cursor-not-allowed opacity-50 rounded-lg">Riwayat</button>
+                        <button className="bg-gray-500 w-full p-3 text-xl font-semibold text-white cursor-not-allowed focus:outline-none rounded-lg">Riwayat</button>
                     </div>
                     <div className="w-1/3 p-2 bg-gray-200 rounded-lg">
                         <div className="mt-6 mb-8 mx-auto">
@@ -72,8 +72,8 @@ class Home extends Component {
                             alt="Covid" />
                         </div>
                         <button
-                        onClick={() => this.setState({redirect: '/data-baru'})}
-                        className="bg-orange-500 w-full p-3 text-xl font-semibold text-white rounded-lg">Data Baru</button>
+                        // onClick={() => this.setState({redirect: '/data-baru'})}
+                        className="bg-gray-500 w-full p-3 text-xl font-semibold text-white cursor-not-allowed focus:outline-none rounded-lg">Data Baru</button>
                     </div>
                 </div>
 

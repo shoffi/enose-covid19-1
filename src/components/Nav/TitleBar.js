@@ -23,7 +23,7 @@ class TitleBar extends Component {
                         onClick={this.props.setNext}
                         className="flex justify-end items-center text-lg w-full text-white bg-brand-green font-semibold focus:outline-none rounded-lg pl-3 pr-1 py-1">
                             {this.props.setNextName}
-                            <svg className="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+                            <svg className="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
                         </button>
                     )}
                 </div>

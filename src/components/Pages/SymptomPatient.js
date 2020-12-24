@@ -266,22 +266,23 @@ class AmbilSample extends Component {
                     setNextName={'Gejala Pasien'}
                 ></TitleBar>
 
-                <div className="py-8">
+                <div className="py-6">
                   <div className="flex items-start space-x-4">
 
                       <div className="w-1/3 relative">
                           <p className="text-brand-green font-semibold mb-1">Hasil Swab</p>
                           <button
                           onClick = { () => this.toggleHasil(-1) }
-                          className="flex w-full items-center bg-gray-200 border-4 border-gray-200 focus:outline-none rounded-lg">
+                          className="flex w-full items-center bg-gray-200 border-2 border-gray-600 focus:outline-none rounded-lg p-2">
                               <p
-                              className="text-xl text-left flex-1 px-3 py-1">
+                              className="text-lg font-semibold text-left flex-1">
                                 {hasil_swab}
                               </p>
-                              <svg className="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
+                              <svg className="w-6 h-6 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
                           </button>
-                          <p className="text-xs text-gray-700 leading-tight mt-2">Jika tidak ada hasil swab hari ini, maka pilih<br /><span className="font-bold text-brand-green">tidak diketahui</span></p>
-                          { this.state.isHasilSelected && (<div className="absolute z-10 h-56 scrolling-touch overflow-y-scroll border bg-white w-full mt-2 rounded-md py-1 divide-y">
+                          <p className="text-sm text-gray-700 leading-tight mt-2">Jika tidak ada hasil swab hari ini, maka pilih <span className="font-bold text-brand-green">tidak diketahui</span></p>
+
+                          { this.state.isHasilSelected && (<div className="absolute z-10 h-40 scrolling-touch overflow-y-scroll border bg-white w-full mt-2 rounded-md py-1 divide-y">
                               { this.state.hasilSwab.map(hasil => (
                                   <div
                                   key = { hasil.id }
@@ -298,12 +299,12 @@ class AmbilSample extends Component {
                                 <p className="text-brand-green font-semibold mb-1">Alat PCR</p>
                                 <button
                                 onClick = { () => this.togglePCR(-1) }
-                                className="flex w-full items-center bg-gray-200 border-4 border-gray-200 focus:outline-none rounded-lg">
+                                className="flex w-full items-center bg-gray-200 border-2 border-gray-600 focus:outline-none rounded-lg p-2">
                                     <p
-                                    className="text-xl text-left flex-1 px-4 py-1">
+                                    className="text-lg font-semibold text-left flex-1">
                                         {alatPcr}
                                     </p>
-                                    <svg className="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
+                                    <svg className="w-6 h-6 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
                                 </button>
                                 { this.state.isPCRSelected && (<div className="absolute z-10 border bg-white w-full mt-2 rounded-md py-2 divide-y">
                                     { this.state.alatPCR.map(pcr => (
@@ -329,18 +330,18 @@ class AmbilSample extends Component {
                     }
 
                   </div>
-                  <hr className="my-5" />
-                  <div className="grid grid-cols-3 gap-3">
+
+                  <div className="grid grid-cols-3 gap-3 mt-3">
                     <div>
                         <p className="text-brand-green font-semibold mb-1">Blood Gas Analysis</p>
                         <button
                         onClick = { () => this.toggleAnalysis(-1) }
-                        className="flex items-center bg-gray-200 border-4 border-gray-200 focus:outline-none rounded-lg">
+                        className="w-full flex items-center bg-gray-200 border-2 border-gray-600 focus:outline-none rounded-lg p-2">
                             <p
-                            className="text-xl text-left flex-1 px-3 py-1">
+                            className="text-lg font-semibold text-left flex-1">
                                 {bloodAnalysis}
                             </p>
-                            <svg className="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
+                            <svg className="w-6 h-6 text-brand-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         { this.state.isbloodAnalysisSelected && 
                             (
@@ -399,7 +400,7 @@ class AmbilSample extends Component {
                         onchange={ this.props.setLED }
                         />
                     </div>
-                    <div>
+                    <div className="col-start-2">
                         <CustomInput
                         data={this.props.LED}
                         value={this.props.LED}

@@ -72,17 +72,17 @@ class PatientDetail extends Component {
                 unit={""}
                 onchange={ this.props.setPatientId }
               />
-              <span className="text-xs text-gray-600">Masukkan ID atau NIK Pasien</span>
+              <span className="text-sm text-gray-700">Masukkan ID atau NIK Pasien</span>
             </div>
             <div className="relative">
               <p className="text-brand-green font-semibold mb-1">Waktu Test</p>
               <button
                 onClick = { () => this.toggleWaktu(this.props.waktuTes) }
                 className="flex w-full items-center bg-gray-200 border-4 border-gray-200 focus:outline-none rounded-lg">
-                <p className="text-xl text-left flex-1 px-4 py-1">
+                <p className="text-lg font-semibold text-left flex-1 px-2 py-1">
                   {waktuTes}
                 </p>
-                <svg className="w-8 h-8 text-brand-orange mx-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
+                <svg className="w-6 h-6 text-brand-orange mx-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
               </button>
 
               { this.state.isWaktuSelected && (<div className="absolute z-10 border bg-white w-full mt-2 rounded-md py-2 divide-y">
@@ -103,7 +103,7 @@ class PatientDetail extends Component {
                   alert('id pasien dan waktu test wajib diisi')
                 }
               } }
-            className="bg-brand-green text-lg p-2 w-full text-white rounded-lg">Lanjutkan</button>
+            className="bg-brand-green font-semibold text-lg p-2 w-full text-white rounded-lg">Lanjutkan</button>
           </div>
         </div>
       </div>
