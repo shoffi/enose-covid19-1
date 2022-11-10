@@ -58,7 +58,7 @@
   "devDependencies": {
     "@tailwindcss/custom-forms": "^0.2.1",
     "autoprefixer": "9.8.6",
-    "electron": "^10.2.0",
+    "electron": "^18.3.7",
     "electron-builder": "^22.9.1",
     "electron-rebuild": "^2.3.4",
     "postcss-cli": "^8.3.1",
